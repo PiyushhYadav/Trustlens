@@ -8,9 +8,13 @@ TrustLens is an editorial-grade trust and privacy auditing platform for India's 
 
 ### 🌐 Live Demo & Deployment
 
-- **Live Web App (Netlify):** <a href="https://trusttlens.netlify.app" target="_blank" rel="noopener noreferrer">https://trusttlens.netlify.app</a>
-- **Live Backend API (Render):** <a href="https://trustlens-qtex.onrender.com" target="_blank" rel="noopener noreferrer">https://trustlens-qtex.onrender.com</a>
-- **Interactive API Endpoint:** <a href="https://trustlens-qtex.onrender.com/score?platform=zomato" target="_blank" rel="noopener noreferrer"><code>/score?platform=zomato</code></a>
+[![Live Web App](https://img.shields.io/badge/Live_App-Netlify-00ad9f?style=for-the-badge&logo=netlify&logoColor=white)](https://trusttlens.netlify.app)
+[![Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://trustlens-qtex.onrender.com)
+[![Live Endpoint](https://img.shields.io/badge/Demo_API-Zomato_Score-005dac?style=for-the-badge&logo=fastapi&logoColor=white)](https://trustlens-qtex.onrender.com/score?platform=zomato)
+
+- **Frontend Application:** [https://trusttlens.netlify.app](https://trusttlens.netlify.app)
+- **Backend API Service:** [https://trustlens-qtex.onrender.com](https://trustlens-qtex.onrender.com)
+- **Interactive JSON Endpoint:** [`/score?platform=zomato`](https://trustlens-qtex.onrender.com/score?platform=zomato)
 
 ---
 
