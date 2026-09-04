@@ -44,66 +44,15 @@ export const Hero: React.FC<HeroProps> = () => {
         </div>
       </div>
       <div className="hidden lg:block lg:col-span-4 relative">
-        <div className="aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl border border-stone-200/50 relative bg-surface-container-lowest flex items-center justify-center">
-          {/* Abstract background */}
-          <div className="absolute inset-0 opacity-50">
-            <svg className="w-full h-full text-zinc-300" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="heroDotGrid" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="1.5" fill="currentColor" />
-                </pattern>
-              </defs>
-              <rect x="0" y="0" width="100%" height="100%" fill="url(#heroDotGrid)" />
-              {/* Abstract network paths */}
-              <path d="M -50 150 C 100 150 200 -50 400 100 M 0 300 C 150 400 250 200 500 350 M -100 500 C 100 450 300 600 500 450" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 4" />
-              <path d="M 50 100 L 150 300 L 350 250 L 450 400" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
-              {/* Network nodes */}
-              <circle cx="50" cy="100" r="3.5" fill="currentColor" />
-              <circle cx="150" cy="300" r="3.5" fill="currentColor" />
-              <circle cx="350" cy="250" r="3.5" fill="currentColor" />
-              <circle cx="450" cy="400" r="3.5" fill="currentColor" />
-            </svg>
-          </div>
-
-          {/* Central Gauge */}
-          <div className="relative w-64 h-64 z-10 bg-white rounded-full p-6 shadow-2xl border border-stone-100 flex flex-col items-center justify-center transform -translate-y-8">
-            <svg className="absolute inset-0 w-full h-full -rotate-90 p-4" viewBox="0 0 100 100">
-              <circle className="text-surface-container-high" cx="50" cy="50" fill="transparent" r="44" stroke="currentColor" strokeWidth="6"></circle>
-              <circle 
-                className="text-primary transition-all duration-1000 ease-out" 
-                cx="50" cy="50" fill="transparent" r="44" 
-                stroke="currentColor" 
-                strokeDasharray="276.46" 
-                strokeDashoffset="63" 
-                strokeWidth="6" 
-                strokeLinecap="round"
-              ></circle>
-            </svg>
-            <span className="text-7xl font-headline font-bold text-on-surface">77</span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-label mt-1 font-bold">Trust Score</span>
-          </div>
-
-          {/* Floating UI Elements */}
-          <div className="absolute top-16 right-8 z-10 flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 px-4 py-2 rounded-lg shadow-sm transform rotate-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-800">Grade B</span>
-          </div>
-
-          <div className="absolute top-56 left-6 z-10 flex flex-col gap-2 bg-white border border-stone-100 p-4 rounded-xl shadow-md transform -rotate-3">
-            <div className="text-[9px] uppercase tracking-widest font-bold text-on-surface-variant">Trackers Detected</div>
-            <div className="flex gap-1.5">
-              <div className="w-10 h-1.5 bg-amber-500 rounded-full"></div>
-              <div className="w-6 h-1.5 bg-surface-container-high rounded-full"></div>
+        <div className="aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl transition-transform duration-700 relative">
+          <img className="w-full h-full object-cover" alt="Glass Monolith Data Vault" src="/hero_image.jpg" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-900/20 to-transparent"></div>
+          <div className="absolute bottom-10 left-8 right-8 text-white">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+              <span className="text-xs uppercase tracking-widest opacity-90 font-medium font-label">Live Analysis Engine</span>
             </div>
-          </div>
-
-          {/* Bottom text overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-surface via-surface/95 to-transparent pt-32 pb-10 px-10 z-20">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
-              <span className="text-xs uppercase tracking-widest text-on-surface-variant font-bold">Live Analysis Engine</span>
-            </div>
-            <p className="text-2xl font-body leading-snug text-on-surface">"Protecting user data through radical transparency."</p>
+            <p className="text-xl font-body leading-snug">"Protecting user data through radical transparency."</p>
           </div>
         </div>
       </div>
