@@ -21,7 +21,9 @@ export const Header: React.FC<HeaderProps> = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button className="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">Get Extension</button>
+          <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 inline-block">
+            Get Extension
+          </Link>
           <button className="w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all border border-stone-200 shadow-sm ml-2">
             <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
           </button>

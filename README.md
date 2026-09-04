@@ -8,9 +8,9 @@ TrustLens is an editorial-grade trust and privacy auditing platform for India's 
 
 ### 🌐 Live Demo & Deployment
 
-- **Live Web App (Netlify):** [https://trusttlens.netlify.app](https://trusttlens.netlify.app)
-- **Live Backend API (Render):** [https://trustlens-qtex.onrender.com](https://trustlens-qtex.onrender.com)
-- **Interactive API Endpoint:** [`/score?platform=zomato`](https://trustlens-qtex.onrender.com/score?platform=zomato)
+- **Live Web App (Netlify):** <a href="https://trusttlens.netlify.app" target="_blank" rel="noopener noreferrer">https://trusttlens.netlify.app</a>
+- **Live Backend API (Render):** <a href="https://trustlens-qtex.onrender.com" target="_blank" rel="noopener noreferrer">https://trustlens-qtex.onrender.com</a>
+- **Interactive API Endpoint:** <a href="https://trustlens-qtex.onrender.com/score?platform=zomato" target="_blank" rel="noopener noreferrer"><code>/score?platform=zomato</code></a>
 
 ---
 
