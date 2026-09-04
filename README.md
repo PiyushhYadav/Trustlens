@@ -1,43 +1,70 @@
 # TrustLens
 
-**Trust, Quantified.**
+> **Trust, Quantified.**
 
-TrustLens is a comprehensive platform for scoring India's top apps and platforms on privacy practices, breach history, and DPDP Act 2023 compliance. It provides editorial-grade veracity audits and transparent privacy scores for the most influential digital platforms.
+TrustLens is an editorial-grade trust and privacy auditing platform for India's digital ecosystem. It scores applications and platforms on privacy practices, breach history, and DPDP Act 2023 compliance through radical transparency.
+
+---
+
+### 🌐 Live Demo & Deployment
+
+- **Live Web App (Netlify):** [https://trusttlens.netlify.app](https://trusttlens.netlify.app)
+- **Live Backend API (Render):** [https://trustlens-qtex.onrender.com](https://trustlens-qtex.onrender.com)
+- **Interactive API Endpoint:** [`/score?platform=zomato`](https://trustlens-qtex.onrender.com/score?platform=zomato)
+
+---
 
 ![TrustLens Hero](README_hero.png)
 
-## Overview
+---
 
-In an age of synthetic certainty, TrustLens cuts through the noise to provide a **Live Analysis Engine** that protects user data through radical transparency. 
+## 🎯 What TrustLens Does
 
-Every platform is audited across 5 core signals:
-- **Privacy Policy** (20 pts)
-- **Breach History** (30 pts)
-- **Compliance** (20 pts)
-- **Complaints** (15 pts)
-- **Trackers** (15 pts)
+In an age of synthetic certainty, TrustLens evaluates digital platforms using **5 independent veracity signals**:
 
-Scores translate to standard grades (A-F) indicating trustworthiness and DPDP Act 2023 compliance.
+| Signal | Weight | Description |
+| :--- | :--- | :--- |
+| **Breach History** | **30 pts** | Incident severity, transparency, and remediation speed. |
+| **Privacy Policy** | **20 pts** | Clarity, data retention caps, third-party sharing, and user rights. |
+| **DPDP Compliance** | **20 pts** | Alignment with India's Digital Personal Data Protection Act 2023. |
+| **Tracker Detection** | **15 pts** | Volume and intrusiveness of hidden third-party tracking scripts. |
+| **Consumer Complaints**| **15 pts** | Volume and resolution rate of verified consumer privacy complaints. |
 
-## Project Structure
+Total scores (0–100) map to intuitive letter grades (**Grade A** to **Grade F**) with clear, actionable advice for users.
 
-- **frontend/**: React, TypeScript, TailwindCSS, and Vite. Includes modular components like `ScoreCard`, `CompareView`, `MethodologyView`, and `ExtensionMockupView`.
-- **backend/**: FastAPI and Python. Powered by an intelligent `scoring_engine.py` and a `demo_data.py` database mapping real-world platforms to dynamic privacy scores.
+---
 
-## Running Locally
+## 🚀 Key Features
 
-1. **Start the Backend:**
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   uvicorn main:app --reload
-   ```
+- **Platform Intelligence:** Instant deep-dive audits for popular platforms (Zomato, Swiggy, Instagram, Paytm, etc.).
+- **Comparison Mode:** Side-by-side veracity analysis highlighting which platform better protects your data.
+- **Methodology & Transparency:** Tamper-proof scoring model derived from 80% independently verifiable data signals.
+- **Chrome Extension Concept:** Quick-audit mini scorecard preview embedded within the application.
 
-2. **Start the Frontend:**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+---
 
-3. Open `http://localhost:5173` in your browser.
+## 🛠️ Tech Stack
+
+- **Frontend:** React 18, TypeScript, Vite, TailwindCSS, React Router
+- **Backend:** Python 3.11, FastAPI, Uvicorn, SQLite Cache Manager
+- **Deployment:** Netlify (Frontend CDN) + Render (Cloud Web Service)
+
+---
+
+## 💻 Running Locally
+
+### 1. Start the Backend
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+### 2. Start the Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
