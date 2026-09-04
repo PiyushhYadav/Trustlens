@@ -18,7 +18,7 @@ TrustLens is an editorial-grade trust and privacy auditing platform for India's 
 
 ---
 
-![TrustLens Hero](README_hero.png)
+![TrustLens Hero](hero_preview.png)
 
 ---
 
