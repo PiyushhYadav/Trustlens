@@ -8,13 +8,23 @@ TrustLens is an editorial-grade trust and privacy auditing platform for India's 
 
 ### 🌐 Live Demo & Deployment
 
-[![Live Web App](https://img.shields.io/badge/Live_App-Netlify-00ad9f?style=for-the-badge&logo=netlify&logoColor=white)](https://trusttlens.netlify.app)
-[![Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://trustlens-qtex.onrender.com)
-[![Live Endpoint](https://img.shields.io/badge/Demo_API-Zomato_Score-005dac?style=for-the-badge&logo=fastapi&logoColor=white)](https://trustlens-qtex.onrender.com/score?platform=zomato)
+<div align="center">
+  <a href="https://trusttlens.netlify.app" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20App-Netlify-00ad9f?style=flat&logo=netlify&logoColor=white&labelColor=18181b" alt="Live Web App" />
+  </a>
+  &nbsp;
+  <a href="https://trustlens-qtex.onrender.com" target="_blank">
+    <img src="https://img.shields.io/badge/Backend%20API-Render-46E3B7?style=flat&logo=render&logoColor=white&labelColor=18181b" alt="Backend API" />
+  </a>
+  &nbsp;
+  <a href="https://trustlens-qtex.onrender.com/score?platform=zomato" target="_blank">
+    <img src="https://img.shields.io/badge/Demo%20API-Zomato%20Score-005dac?style=flat&logo=fastapi&logoColor=white&labelColor=18181b" alt="Demo API" />
+  </a>
+</div>
 
-- **Frontend Application:** [https://trusttlens.netlify.app](https://trusttlens.netlify.app)
-- **Backend API Service:** [https://trustlens-qtex.onrender.com](https://trustlens-qtex.onrender.com)
-- **Interactive JSON Endpoint:** [`/score?platform=zomato`](https://trustlens-qtex.onrender.com/score?platform=zomato)
+- **Frontend Application:** <a href="https://trusttlens.netlify.app" target="_blank" rel="noopener noreferrer">https://trusttlens.netlify.app</a>
+- **Backend API Service:** <a href="https://trustlens-qtex.onrender.com" target="_blank" rel="noopener noreferrer">https://trustlens-qtex.onrender.com</a>
+- **Interactive JSON Endpoint:** <a href="https://trustlens-qtex.onrender.com/score?platform=zomato" target="_blank" rel="noopener noreferrer"><code>/score?platform=zomato</code></a>
 
 ---
 
