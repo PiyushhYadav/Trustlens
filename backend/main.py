@@ -12,10 +12,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Allow CORS for localhost:5173 (Vite) and localhost:3000
+# Allow CORS for localhost and deployed frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["*"], # Allow all origins for the demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

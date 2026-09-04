@@ -5,7 +5,8 @@ export const ExtensionMockupView: React.FC = () => {
   const [data, setData] = useState<ScoreData | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8000/score?platform=zomato')
+    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+    fetch(`${apiBase}/score?platform=zomato`)
       .then(res => res.json())
       .then(json => setData(json));
   }, []);
