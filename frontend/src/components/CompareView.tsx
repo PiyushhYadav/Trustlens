@@ -33,10 +33,11 @@ export const CompareView: React.FC = () => {
       
       setLoading(true);
       setError('');
+      const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`http://localhost:8000/score?platform=${encodeURIComponent(platform1)}`),
-          fetch(`http://localhost:8000/score?platform=${encodeURIComponent(platform2)}`)
+          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform1)}`),
+          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform2)}`)
         ]);
         const json1 = await res1.json();
         const json2 = await res2.json();

@@ -16,8 +16,8 @@ export const ScoreCardView: React.FC = () => {
     setLoading(true);
     setError('');
     setPending(false);
-
-    fetch(`http://localhost:8000/score?platform=${encodeURIComponent(platform)}`)
+    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+    fetch(`${apiBase}/score?platform=${encodeURIComponent(platform)}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to fetch data');
