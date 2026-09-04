@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrustLens | Trust, Quantified.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#fffeff",
+                        "on-surface-variant": "#414752",
+                        "primary": "#005dac",
+                        "surface-tint": "#005faf",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "inverse-surface": "#2e3132",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#56656e",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed-dim": "#ffb688",
+                        "tertiary": "#944700",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#526069",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d6e5ef",
+                        "outline-variant": "#c1c6d4",
+                        "on-tertiary-fixed-variant": "#733600",
+                        "on-background": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "outline": "#717783",
+                        "primary-fixed": "#d4e3ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#d3e2ed",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed": "#ffdbc7",
+                        "on-tertiary-fixed": "#311300",
+                        "primary-container": "#1976d2",
+                        "primary-fixed-dim": "#a5c8ff",
+                        "on-primary-fixed": "#001c3a",
+                        "surface-bright": "#f8f9fa",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#a5c8ff",
+                        "tertiary-container": "#ba5b00",
+                        "on-primary-fixed-variant": "#004786",
+                        "on-primary-container": "#fffdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .font-serif { font-family: 'Newsreader', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        /* Ensuring all text is upright as per design system update */
+        * { font-style: normal !important; }
+    </style>
+</head>
+<body class="text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation -->
+<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100">
+<nav class="flex justify-between items-center w-full px-8 py-5 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-12">
+<a class="text-2xl font-serif font-bold text-zinc-900 tracking-tight" href="/">TrustLens</a>
+<div class="hidden md:flex space-x-8">
+<a class="text-blue-700 font-bold border-b-2 border-blue-700 pb-1" href="#">Intelligence</a>
+<a class="text-zinc-500 hover:text-zinc-900 transition-colors" href="#">Reports</a>
+<a class="text-zinc-500 hover:text-zinc-900 transition-colors" href="#">Comparison</a>
+<a class="text-zinc-500 hover:text-zinc-900 transition-colors" href="#">Methodology</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">Get Extension</button>
+<button class="p-2 text-zinc-500 hover:bg-stone-100 rounded-full transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="pt-48 pb-32">
+<!-- Hero Section -->
+<section class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center">
+<div class="lg:col-span-7 lg:col-start-2">
+<h1 class="text-6xl md:text-8xl font-serif text-on-surface leading-[1.05] tracking-tighter mb-10">
+                Trust, <br/>Quantified.
+            </h1>
+<p class="text-xl md:text-2xl text-on-surface-variant font-body leading-relaxed max-w-xl mb-14">
+                In an age of synthetic certainty, we provide editorial-grade veracity audits for the world's most influential models and news cycles.
+            </p>
+<!-- Central Search Bar -->
+<div class="relative max-w-2xl group">
+<div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full pl-16 pr-32 py-6 rounded-2xl bg-surface-container-highest border-0 focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest text-lg transition-all placeholder:text-zinc-400" placeholder="Search URL, AI Model, or Public Entity..." type="text"/>
+<button class="absolute right-3 inset-y-3 px-6 bg-zinc-900 text-white rounded-xl font-medium hover:bg-zinc-800 transition-colors">Analyze</button>
+</div>
+<div class="mt-8 flex flex-wrap gap-3">
+<span class="text-xs font-label uppercase tracking-widest text-zinc-400 self-center mr-2">Trending:</span>
+<button class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">GPT-4o Veracity</button>
+<button class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Deepfake Audit</button>
+<button class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Reuters Ethics</button>
+</div>
+</div>
+<div class="hidden lg:block lg:col-span-4 relative">
+<div class="aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl transition-transform duration-700">
+<img class="w-full h-full object-cover" data-alt="Close-up of a high-end fountain pen on a textured cream paper next to a glass of water, minimalist editorial photography with soft natural morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVmpAwSM9kWepwzCRZLQh519EmOb_2hx14pM2HIBUQeJw4knEz8n-OGNIGo97PhzwmAR0EHGCVuwgVl8LweiT5FskbEzdcC71jbqQMkgIb3CLpZV6XDNxoUhHdHenKEH3eqwRVlHMCYsLbNWhPTeR1j9s4aVSQE-FFgU90qYCZ6blk_zMFtk3jO8_Ee63nO8n1xG_QTaHEqZeSb-k5O8bM1S6RiCBbwZqjeBDtMO6DDU-0Rn1umVsRLGtsTmdxNZi_Ov_CJHNZ6rA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent"></div>
+<div class="absolute bottom-10 left-8 right-8 text-white">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+<span class="text-xs uppercase tracking-widest opacity-80 font-medium">Live Integrity Feed</span>
+</div>
+<p class="text-xl font-serif leading-snug">"Verifying the unseen infrastructure of truth."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Insights Grid Section -->
+<section class="max-w-screen-2xl mx-auto px-8 mt-64">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="max-w-xl">
+<h2 class="text-5xl font-serif text-on-surface mb-6">Intelligence Reports</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed">Our curated audits examine technical metrics and ethical alignment across the digital landscape.</p>
+</div>
+<button class="text-primary font-bold flex items-center gap-2 group text-lg">
+                Explore Full Archive 
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+<!-- Report Card 1 -->
+<div class="group bg-surface-container-lowest p-10 rounded-[2.5rem] hover:bg-white transition-all duration-300 border border-zinc-100 hover:shadow-2xl hover:shadow-zinc-200/40">
+<div class="flex justify-between items-start mb-16">
+<span class="text-xs font-label uppercase tracking-widest text-zinc-400">Model Audit</span>
+<div class="w-16 h-16 rounded-full border-2 border-secondary-container flex items-center justify-center">
+<span class="text-xl font-serif font-bold text-primary">94</span>
+</div>
+</div>
+<h3 class="text-2xl font-serif mb-5 leading-tight group-hover:text-primary transition-colors">Claude 3.5 Sonnet: Hallucination Stress Test</h3>
+<p class="text-on-surface-variant text-base leading-relaxed mb-10">An intensive evaluation of semantic drift and logical consistency in multi-turn reasoning tasks.</p>
+<div class="flex items-center gap-4 pt-8 border-t border-zinc-50">
+<img class="w-10 h-10 rounded-full bg-zinc-200 object-cover" data-alt="Portrait of a professional analyst in a clean studio setting with neutral colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARjSuFTgrKfZIBgqnC2mYOi714_10fDgqpy7Z62PeZZJLmYWZFlSrqSqKzXbEdy2D8sIl9CKT25bRLYXKar4CoZjLZEa7bhe31UEdSDPzyOJKl62VlTWaxx19HtWe6IrPwWlumX3SkznE0mQlby2BLq26Eom4Dw-6a3AhJrrCWsmJxVE0kfUj8vuRbMfx9DtL7mBQ8blluRVNF95QQYWlofhsZ-wafdaZgWKggc_p21XhL-Mam9AZQn87fhA1uttudgCV29oXmWaI"/>
+<span class="text-sm font-medium text-zinc-500">Dr. Elena Vance</span>
+<span class="text-xs text-zinc-300 ml-auto uppercase tracking-wider">14 Oct, 2024</span>
+</div>
+</div>
+<!-- Report Card 2 -->
+<div class="group bg-surface-container-low p-10 rounded-[2.5rem] hover:bg-white transition-all duration-300 border border-zinc-200/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8">
+<span class="material-symbols-outlined text-tertiary text-4xl">verified</span>
+</div>
+<div class="mt-28">
+<span class="text-xs font-label uppercase tracking-widest text-zinc-500">Industry Insight</span>
+<h3 class="text-2xl font-serif mt-6 mb-5 leading-tight">The 2024 Veracity Standard for Digital Newsrooms</h3>
+<p class="text-on-surface-variant text-base leading-relaxed mb-10">How global media organizations are adopting TrustLens protocols to combat generative misinformation.</p>
+<div class="flex gap-2">
+<span class="px-4 py-1.5 rounded-lg bg-white text-[11px] font-bold tracking-widest uppercase text-zinc-600 shadow-sm">Ethics</span>
+<span class="px-4 py-1.5 rounded-lg bg-white text-[11px] font-bold tracking-widest uppercase text-zinc-600 shadow-sm">Protocol</span>
+</div>
+</div>
+</div>
+<!-- Report Card 3 -->
+<div class="group bg-surface-container-lowest p-10 rounded-[2.5rem] hover:bg-white transition-all duration-300 border border-zinc-100 hover:shadow-2xl hover:shadow-zinc-200/40">
+<div class="flex justify-between items-start mb-16">
+<span class="text-xs font-label uppercase tracking-widest text-zinc-400">Comparison</span>
+<div class="flex -space-x-4">
+<div class="w-12 h-12 rounded-full bg-zinc-900 flex items-center justify-center border-4 border-white text-white text-[10px] font-bold">G</div>
+<div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center border-4 border-white text-white text-[10px] font-bold">O</div>
+</div>
+</div>
+<h3 class="text-2xl font-serif mb-5 leading-tight group-hover:text-primary transition-colors">Open-Source vs. Proprietary Guardrails</h3>
+<p class="text-on-surface-variant text-base leading-relaxed mb-10">Analyzing the gap in moderation consistency between Llama 3 and GPT-4 series models.</p>
+<div class="flex items-center gap-4 pt-8 border-t border-zinc-50">
+<img class="w-10 h-10 rounded-full bg-zinc-200 object-cover" data-alt="Portrait of a tech investigator in minimalist clothing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKL8C0-axhHKavgQPM-E4zPNA-ra5_6dFrZihiWK6fDa2fyEBGY2sJ3vPCluPpslJs-iWmWaogTgE_e-Ujc2ubaw6OxCWOwy03Lk0v_5pVPDGUzEksjs4o1Gak0a9Oml8gYcMiEMvZTh9-ffs2ZkvF5c32uJEo7itrkrKj-GbKA-dmRL78sx6umYUYw4AFgwj7ti0nj4ZK50OGImBlPW_tkND3oETId1z7lLJpT7NW1XlfaEsTi8Fuh9oQgSEFJ_3YkX__aWTcl1Q"/>
+<span class="text-sm font-medium text-zinc-500">Marcus Thorne</span>
+<span class="text-xs text-zinc-300 ml-auto uppercase tracking-wider">09 Oct, 2024</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Editorial Section -->
+<section class="max-w-screen-2xl mx-auto px-8 mt-64 grid grid-cols-1 lg:grid-cols-12 gap-24">
+<div class="lg:col-span-5 lg:col-start-2">
+<img class="w-full aspect-square object-cover rounded-[3rem] grayscale hover:grayscale-0 transition-all duration-1000 shadow-xl" data-alt="Minimalist abstract sculpture in a clean gallery setting with sharp shadows, representing structure and balance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGY9_vqGv7dzay1MQDyYNVIchdchBKuUcHMjKvg0oENAIvE5-I8-TrrocdQNrxWGx4EWA_-Rb8bYlXkV9NsD6VLm6kf9jc1MyeiCjLUw3GGJ4BAYko5secTwiGgkeEWdO3nBGbYmgpX71mwaChaX_Lm7nksuNL1bphcZAcq03PIrHfP4asT2__SGXVruXp18xOF2xfolhaOwvzQee-ZgXcEVFYt6Vwq9tAKKZnnTpsNbxBB-QBpc_h66j_jZJkauZaBTz4A_FQ4dU"/>
+</div>
+<div class="lg:col-span-5 flex flex-col justify-center">
+<span class="text-xs font-label uppercase tracking-widest text-primary font-bold mb-8">Our Methodology</span>
+<h2 class="text-6xl font-serif leading-tight mb-12">Beyond simple binary truth.</h2>
+<div class="space-y-16">
+<div class="flex gap-8">
+<span class="text-4xl font-serif text-zinc-200">01</span>
+<div>
+<h4 class="font-bold text-xl mb-3">Contextual Anchoring</h4>
+<p class="text-on-surface-variant text-lg">We don't just verify facts; we analyze the intent and historical context of every claim.</p>
+</div>
+</div>
+<div class="flex gap-8">
+<span class="text-4xl font-serif text-zinc-200">02</span>
+<div>
+<h4 class="font-bold text-xl mb-3">Synthetic Signal Detection</h4>
+<p class="text-on-surface-variant text-lg">Advanced algorithmic markers identify the subtle fingerprints of machine-generated influence.</p>
+</div>
+</div>
+<div class="flex gap-8">
+<span class="text-4xl font-serif text-zinc-200">03</span>
+<div>
+<h4 class="font-bold text-xl mb-3">Human-in-the-Loop Curation</h4>
+<p class="text-on-surface-variant text-lg">Our final intelligence scores are validated by subject matter experts, never just algorithms.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="max-w-6xl mx-auto px-8 mt-64 text-center bg-zinc-950 text-white py-32 rounded-[4rem] relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.2) 1px, transparent 0); background-size: 60px 60px;"></div>
+<h2 class="text-5xl md:text-7xl font-serif mb-10">Ready to see through the lens?</h2>
+<p class="text-zinc-400 max-w-2xl mx-auto mb-16 text-xl leading-relaxed">Join 12,000+ analysts, journalists, and researchers using TrustLens to navigate the information age.</p>
+<div class="flex flex-col sm:flex-row gap-6 justify-center">
+<button class="bg-white text-zinc-900 px-12 py-5 rounded-2xl font-bold text-lg hover:bg-zinc-100 transition-all">Start Free Analysis</button>
+<button class="border border-zinc-700 px-12 py-5 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all">Enterprise Access</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-16 border-t border-stone-200">
+<div class="max-w-screen-2xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-12">
+<div class="flex flex-col items-center md:items-start gap-3">
+<span class="font-serif text-2xl font-bold text-zinc-900">TrustLens</span>
+<p class="text-[10px] font-sans uppercase tracking-[0.2em] text-zinc-400">© 2024 TrustLens Intelligence Bureau. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-10">
+<a class="text-xs font-sans uppercase tracking-widest text-zinc-400 hover:text-primary font-medium transition-colors" href="#">Privacy Protocol</a>
+<a class="text-xs font-sans uppercase tracking-widest text-zinc-400 hover:text-primary font-medium transition-colors" href="#">Ethics Statement</a>
+<a class="text-xs font-sans uppercase tracking-widest text-zinc-400 hover:text-primary font-medium transition-colors" href="#">API Reference</a>
+<a class="text-xs font-sans uppercase tracking-widest text-zinc-400 hover:text-primary font-medium transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

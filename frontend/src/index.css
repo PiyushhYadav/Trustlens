@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { 
+    font-family: 'Tiempos Text', 'Source Serif 4', Georgia, serif; 
+    background-color: theme('colors.background'); 
+  }
+}
+
+* { font-style: normal !important; }
