@@ -1,0 +1,32 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+export interface HeaderProps {}
+
+export const Header: React.FC<HeaderProps> = () => {
+  const location = useLocation();
+  const isCompare = location.pathname.startsWith('/compare');
+  const isMethodology = location.pathname.startsWith('/methodology');
+  const isIntelligence = !isCompare && !isMethodology;
+
+  return (
+    <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100">
+      <nav className="flex justify-between items-center w-full px-8 py-5 max-w-screen-2xl mx-auto">
+        <div className="flex items-center gap-12">
+          <Link className="text-2xl font-serif font-bold text-zinc-900 tracking-tight" to="/">TrustLens</Link>
+          <div className="hidden md:flex space-x-8">
+            <Link className={`${isIntelligence ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/">Intelligence</Link>
+            <Link className={`${isCompare ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/compare">Comparison</Link>
+            <Link className={`${isMethodology ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/methodology">Methodology</Link>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">Get Extension</button>
+          <button className="w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all border border-stone-200 shadow-sm ml-2">
+            <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
+          </button>
+        </div>
+      </nav>
+    </header>
+  );
+};
