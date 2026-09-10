@@ -19,6 +19,13 @@ export interface ScoreData {
   action_steps: string[];
   trend: number[];
   description?: string;
+  platform_info?: {
+    display_name: string;
+    category: string;
+    domain: string;
+    android_package?: string;
+    policy_url?: string;
+  };
 }
 
 interface ScoreCardProps {
@@ -324,6 +331,23 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
               );
             }
 
+            let linkHref = '';
+            if (key === 'breach') {
+               linkHref = 'https://haveibeenpwned.com';
+            } else if (key === 'policy') {
+               linkHref = data.platform_info?.policy_url || (data.platform_info?.domain ? `https://${data.platform_info.domain}` : '');
+            } else if (key === 'compliance' || key === 'security') {
+               linkHref = '/methodology';
+            } else if (key === 'tracker') {
+               linkHref = data.platform_info?.android_package 
+                 ? `https://reports.exodus-privacy.eu.org/en/reports/search/${data.platform_info.android_package}` 
+                 : 'https://reports.exodus-privacy.eu.org';
+            } else if (key === 'review' || key === 'complaint') {
+               linkHref = data.platform_info?.android_package 
+                 ? `https://play.google.com/store/apps/details?id=${data.platform_info.android_package}` 
+                 : '';
+            }
+
             return (
               <div key={key} className="bg-white border border-stone-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col h-full">
                 <div className="flex items-center justify-between mb-3">
@@ -346,10 +370,14 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 <p className="text-xs text-zinc-500 font-body leading-relaxed flex-grow sm:pl-[52px]">
                   {desc}
                 </p>
-                <hr className="border-stone-100 my-4" />
-                <a href="#" onClick={(e) => e.preventDefault()} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline w-fit sm:pl-[52px]">
-                  View source <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                </a>
+                {linkHref && (
+                  <>
+                    <hr className="border-stone-100 my-4" />
+                    <a href={linkHref} target={linkHref.startsWith('/') ? '_self' : '_blank'} rel="noopener noreferrer" className="text-primary text-xs font-bold flex items-center gap-1 hover:underline w-fit sm:pl-[52px]">
+                      View source <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                  </>
+                )}
               </div>
             );
           })}

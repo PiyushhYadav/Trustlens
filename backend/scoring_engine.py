@@ -113,6 +113,8 @@ def calculate_score(
             "display_name": platform_info.get("display_name", "") if platform_info else "",
             "category": platform_info.get("category", "") if platform_info else "",
             "domain": platform_info.get("domain", "") if platform_info else "",
+            "android_package": platform_info.get("android_package", "") if platform_info else "",
+            "policy_url": platform_info.get("policy_url", "") if platform_info else "",
         } if platform_info else None,
     }
 
