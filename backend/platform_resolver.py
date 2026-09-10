@@ -18,6 +18,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "domain": "zomato.com",
         "policy_url": "https://www.zomato.com/privacy",
         "category": "Food Delivery",
+        "description": "Zomato is an Indian multinational restaurant aggregator and food delivery company."
     },
     "swiggy": {
         "display_name": "Swiggy",
@@ -25,6 +26,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "domain": "swiggy.com",
         "policy_url": "https://www.swiggy.com/privacy-policy",
         "category": "Food Delivery",
+        "description": "Swiggy is India's leading on-demand delivery platform for food, groceries, and dining."
     },
     "instagram": {
         "display_name": "Instagram",
@@ -32,6 +34,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "domain": "instagram.com",
         "policy_url": "https://privacycenter.instagram.com/policy",
         "category": "Social Media",
+        "description": "Instagram is a photo and video sharing social networking service owned by Meta Platforms."
     },
     "paytm": {
         "display_name": "Paytm",
@@ -39,6 +42,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "domain": "paytm.com",
         "policy_url": "https://paytm.com/about-us/privacy-policy",
         "category": "Fintech",
+        "description": "Paytm is an Indian multinational financial technology company that specializes in digital payments and financial services."
     },
     "phonepe": {
         "display_name": "PhonePe",
@@ -46,6 +50,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "domain": "phonepe.com",
         "policy_url": "https://www.phonepe.com/privacy-policy/",
         "category": "Fintech",
+        "description": "PhonePe is an Indian digital payments and financial services company headquartered in Bengaluru."
     },
     "flipkart": {
         "display_name": "Flipkart",
@@ -315,6 +320,7 @@ Return a JSON object with:
 - display_name (string): The proper capitalized name
 - category (string): Category like "Food Delivery", "Social Media", "Fintech", etc.
 - policy_url (string): URL of the privacy policy page, or null if unknown
+- description (string): A short 1-sentence bio or description of what the platform is.
 
 Return ONLY valid JSON."""
         

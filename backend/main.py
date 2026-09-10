@@ -179,11 +179,8 @@ async def get_score(platform: str):
     }
 
     # Build the result
-    description_text = (
-        f"{display_name} — {platform_info.get('category', 'Digital Platform')}. "
-        f"Live privacy audit powered by Exodus Privacy, Have I Been Pwned, "
-        f"Google Play Store reviews, and Gemini AI."
-    )
+    default_desc = f"{display_name} is a {platform_info.get('category', 'digital platform').lower()} operating in the Indian digital ecosystem."
+    description_text = platform_info.get("description", default_desc)
 
     result = calculate_score(
         sub_scores=sub_scores,
