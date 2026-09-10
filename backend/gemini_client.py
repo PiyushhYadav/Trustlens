@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
-DEFAULT_MODEL = "gemini-2.5-flash"  # switch to gemini-3-flash-preview if deprecated
+DEFAULT_MODEL = "gemini-3-flash-preview"  # updated default for live demo
 
 
 class GeminiClient:
