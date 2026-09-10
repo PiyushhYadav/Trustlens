@@ -7,6 +7,7 @@ export interface SignalData {
   compliant?: boolean;
   source?: string;
   verified?: boolean;
+  is_fallback?: boolean;
 }
 
 export interface ScoreData {
@@ -150,11 +151,18 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
 
               return (
                 <div key={key} className="bg-surface-container-lowest p-8 rounded-2xl shadow-[0px_12px_32px_rgba(25,28,29,0.04)] space-y-6 border border-stone-100 transition-shadow hover:shadow-[0px_16px_48px_rgba(25,28,29,0.08)]">
-                  <div className="flex justify-between items-end">
-                    <span className="text-xs font-label text-on-surface-variant uppercase tracking-widest">{key}</span>
-                    <span className="text-2xl font-headline font-bold text-on-surface">
+                  <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-sm font-label font-bold uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                      {key}
+                      {signal.is_fallback && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold border border-amber-200" title="Estimated score due to missing data or analysis timeout">
+                          Est.
+                        </span>
+                      )}
+                    </h3>
+                    <div className="text-2xl font-headline font-bold text-on-surface">
                       {signal.score}<span className="text-sm font-medium text-zinc-400">/{signal.max}</span>
-                    </span>
+                    </div>
                   </div>
                   <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
                     <div className={`h-full ${barColor}`} style={{ width: `${percentage}%` }}></div>
