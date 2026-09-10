@@ -167,7 +167,7 @@ Return ONLY valid JSON."""
     def _fallback_policy_score(self):
         return {
             "total_score": 10,
-            "summary": "Analysis unavailable — using baseline score.",
+            "summary": "Analysis unavailable — midpoint score shown, not a verified result.",
             "dpdp_compliant": False,
             "source": "fallback",
             "verified": False,

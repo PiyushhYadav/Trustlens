@@ -166,10 +166,10 @@ async def get_score(platform: str):
         "compliance": {
             "score": dpdp_score,
             "max": 20,
-            "summary": "DPDP Act 2023 Compliant" if dpdp_compliant else f"DPDP Non-Compliant: {len(dpdp_issues)} issue(s) found",
-            "compliant": dpdp_compliant,
+            "summary": "DPDP Act 2023 Compliant: 0 issues found" if (dpdp_compliant or len(dpdp_issues) == 0) else f"DPDP Non-Compliant: {len(dpdp_issues)} issue(s) found",
+            "compliant": dpdp_compliant or len(dpdp_issues) == 0,
             "issues": dpdp_issues,
-            "source": "gemini_ai_policy_analysis",
+            "source": policy_analysis.get("source", "gemini_ai_policy_analysis"),
             "verified": policy_analysis.get("source") != "fallback",
         },
         "complaint": complaint_analysis,
