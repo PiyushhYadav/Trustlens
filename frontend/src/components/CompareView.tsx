@@ -1,8 +1,78 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import type { ScoreData } from './ScoreCard';
 
 
 import { getGradeStyle } from './ScoreCard';
+
+const SearchableSelect = ({ value, onChange, options, placeholder }: { value: string, onChange: (val: string) => void, options: string[], placeholder: string }) => {
+  const [query, setQuery] = useState(value);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setQuery(value); }, [value]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setQuery(value); // revert to selected value if click outside without selecting
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [value]);
+
+  const filtered = options.filter(opt => opt.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <div className="relative flex-1 md:w-48" ref={wrapperRef}>
+      <div 
+        className="flex items-center px-4 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant font-label text-sm cursor-text bg-white"
+        onClick={() => setOpen(true)}
+      >
+        <input
+          type="text"
+          className="w-full outline-none bg-transparent capitalize text-on-surface"
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => {
+            setQuery('');
+            setOpen(true);
+          }}
+        />
+        <svg className={`w-4 h-4 text-zinc-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {open && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-outline-variant rounded-xl shadow-lg max-h-60 overflow-y-auto">
+          {filtered.length === 0 ? (
+            <div className="px-4 py-3 text-sm text-zinc-400 font-label">No platforms found.</div>
+          ) : (
+            filtered.map(p => (
+              <div
+                key={p}
+                className="px-4 py-3 text-sm font-label text-on-surface hover:bg-stone-50 cursor-pointer capitalize transition-colors"
+                onClick={() => {
+                  onChange(p);
+                  setQuery(p);
+                  setOpen(false);
+                }}
+              >
+                {p}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const CompareView: React.FC = () => {
   const [platform1, setPlatform1] = useState("");
@@ -121,29 +191,25 @@ export const CompareView: React.FC = () => {
           <p className="text-lg text-on-surface-variant font-body">Benchmarking veracity signals head-to-head.</p>
         </div>
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
-          <select 
+          <SearchableSelect 
             value={platform1} 
-            onChange={(e) => {
-              setPlatform1(e.target.value);
+            onChange={(val) => {
+              setPlatform1(val);
               setShowResults(false);
             }}
-            className="flex-1 md:w-48 px-4 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant font-label text-sm capitalize"
-          >
-            <option value="" disabled>Select platform...</option>
-            {availablePlatforms.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+            options={availablePlatforms}
+            placeholder="Select platform..."
+          />
           <div className="flex items-center text-on-surface-variant font-bold font-label">VS</div>
-          <select 
+          <SearchableSelect 
             value={platform2} 
-            onChange={(e) => {
-              setPlatform2(e.target.value);
+            onChange={(val) => {
+              setPlatform2(val);
               setShowResults(false);
             }}
-            className="flex-1 md:w-48 px-4 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant font-label text-sm capitalize"
-          >
-            <option value="" disabled>Select platform...</option>
-            {availablePlatforms.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+            options={availablePlatforms}
+            placeholder="Select platform..."
+          />
           <button 
             onClick={() => setShowResults(true)}
             disabled={!platform1 || !platform2}
