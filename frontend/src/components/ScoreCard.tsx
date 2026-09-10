@@ -49,7 +49,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   const offset = circumference - (data.score / 100) * circumference;
 
   // Trend line math (dynamically scaled for visual drama)
-  const safeTrend = data.trend && data.trend.length > 0 ? data.trend : [data.score];
+  const safeTrend = Array.isArray(data.trend) && data.trend.length > 0 ? data.trend : [data.score, data.score, data.score];
   const trendMax = Math.max(...safeTrend);
   const trendMin = Math.min(...safeTrend);
   // Add 10% padding to the range so the line doesn't hit the absolute top/bottom edges
@@ -59,17 +59,13 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   const range = displayMax - displayMin;
   
   // map trend values to SVG coordinates (0 to 100 on X, Y from 35 down to 5)
-  // CRASH FIX: Guard against length < 2
-  const isFlat = safeTrend.length < 2;
-  const stepX = isFlat ? 100 : 100 / (safeTrend.length - 1);
-  const points = isFlat 
-    ? `0,${35 - (((safeTrend[0] - displayMin) / range) * 30)} 100,${35 - (((safeTrend[0] - displayMin) / range) * 30)}`
-    : safeTrend.map((val, idx) => {
-        const x = idx * stepX;
-        const normalized = (val - displayMin) / range;
-        const y = 35 - (normalized * 30);
-        return `${x},${y}`;
-      }).join(' ');
+  const stepX = 100 / (safeTrend.length - 1);
+  const points = safeTrend.map((val, idx) => {
+    const x = idx * stepX;
+    const normalized = (val - displayMin) / range;
+    const y = 35 - (normalized * 30);
+    return `${x},${y}`;
+  }).join(' ');
 
   const yFirst = 35 - (((safeTrend[0] - displayMin) / range) * 30);
   const yLast = 35 - (((safeTrend[safeTrend.length - 1] - displayMin) / range) * 30);
@@ -228,7 +224,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
           </div>
           <div className="mt-8 pt-8 border-t border-outline-variant/15">
             <p className="text-sm font-sans leading-relaxed text-on-surface-variant">
-              Latest score is <span className="text-primary font-bold">{data.trend[data.trend.length - 1]}</span> out of 100.
+              Latest score is <span className="text-primary font-bold">{safeTrend[safeTrend.length - 1]}</span> out of 100.
             </p>
           </div>
         </div>
