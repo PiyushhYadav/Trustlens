@@ -8,3 +8,6 @@ env/
 dist/
 build/
 *.db
+
+# Local Netlify folder
+.netlify

@@ -103,6 +103,12 @@ export const ScoreCardView: React.FC = () => {
       return () => controller.abort();
   }, [platform]);
 
+  useEffect(() => {
+    // Notify header when report is ready for download
+    window.dispatchEvent(new CustomEvent('reportReady', { detail: !loading && !error && data }));
+    return () => { window.dispatchEvent(new CustomEvent('reportReady', { detail: false })); };
+  }, [loading, error, data]);
+
   if (loading) {
     return <LoadingAnimation platform={platform || 'app'} />;
   }
