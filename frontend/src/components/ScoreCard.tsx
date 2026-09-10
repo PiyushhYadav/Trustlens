@@ -5,6 +5,8 @@ export interface SignalData {
   max: number;
   summary: string;
   compliant?: boolean;
+  source?: string;
+  verified?: boolean;
 }
 
 export interface ScoreData {
@@ -119,9 +121,25 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 </div>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-headline text-on-surface leading-[1.15] font-bold capitalize">
-                {platform}
-              </h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-4xl md:text-6xl font-headline text-on-surface leading-[1.15] font-bold capitalize">
+                  {platform}
+                </h1>
+                <button 
+                  onClick={() => window.print()} 
+                  className="print:hidden hidden md:flex px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-bold tracking-wide uppercase transition-colors items-center gap-2"
+                >
+                  Download Report
+                </button>
+              </div>
+            </div>
+            <div className="md:hidden print:hidden mt-2">
+               <button 
+                  onClick={() => window.print()} 
+                  className="w-full px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-bold tracking-wide uppercase transition-colors flex justify-center items-center gap-2"
+                >
+                  Download Report
+                </button>
             </div>
             <p className="text-xl text-on-surface-variant leading-relaxed font-body">
               {data.description || "An automated trust and privacy audit based on five independent veracity signals."}
@@ -152,6 +170,31 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        {/* Data Transparency Panel */}
+        <section className="space-y-6 bg-zinc-50 p-8 rounded-2xl border border-stone-200">
+          <h3 className="text-sm font-label uppercase tracking-[0.2em] text-on-surface-variant font-bold flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">verified_user</span>
+            Data Sources & Verification
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(data.signals).map(([key, signal]) => (
+               <div key={key} className="flex items-center gap-3 text-sm font-sans text-zinc-600 bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
+                 {signal.verified ? (
+                   <span className="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
+                 ) : (
+                   <span className="material-symbols-outlined text-amber-500 text-lg">warning</span>
+                 )}
+                 <div className="truncate">
+                   <div className="uppercase text-[10px] tracking-wider font-bold text-zinc-400">{key}</div>
+                   <div className="capitalize font-medium truncate" title={signal.source?.replace(/_/g, ' ') || 'Unknown'}>
+                     {signal.source?.replace(/_/g, ' ') || 'Unknown'}
+                   </div>
+                 </div>
+               </div>
+            ))}
           </div>
         </section>
       </div>

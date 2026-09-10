@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import type { ScoreData } from './ScoreCard';
 
-const PLATFORMS = [
-  "zomato", "swiggy", "instagram", "byjus", "aarogya setu", "paytm", "flipkart"
-];
 
 import { getGradeStyle } from './ScoreCard';
 
 export const CompareView: React.FC = () => {
   const [platform1, setPlatform1] = useState("");
   const [platform2, setPlatform2] = useState("");
+  const [availablePlatforms, setAvailablePlatforms] = useState<string[]>([]);
   
   const [data1, setData1] = useState<ScoreData | null>(null);
   const [data2, setData2] = useState<ScoreData | null>(null);
@@ -20,6 +18,23 @@ export const CompareView: React.FC = () => {
   useEffect(() => {
     let active = true;
     const controller = new AbortController();
+
+    const fetchPlatforms = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+        const res = await fetch(`${apiBase}/platforms`, { signal: controller.signal });
+        const data = await res.json();
+        if (active && data.platforms) {
+          setAvailablePlatforms(data.platforms.map((p: any) => p.name));
+        }
+      } catch (e) {
+        if (active) {
+          setAvailablePlatforms(["Zomato", "Swiggy", "Instagram", "Byjus", "Aarogya Setu", "Paytm", "Flipkart"]);
+        }
+      }
+    };
+
+    fetchPlatforms();
 
     const fetchScores = async () => {
       if (!platform1 || !platform2) return;
@@ -99,7 +114,7 @@ export const CompareView: React.FC = () => {
             className="flex-1 md:w-48 px-4 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant font-label text-sm capitalize"
           >
             <option value="" disabled>Select platform...</option>
-            {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+            {availablePlatforms.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
           <div className="flex items-center text-on-surface-variant font-bold font-label">VS</div>
           <select 
@@ -111,7 +126,7 @@ export const CompareView: React.FC = () => {
             className="flex-1 md:w-48 px-4 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant font-label text-sm capitalize"
           >
             <option value="" disabled>Select platform...</option>
-            {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+            {availablePlatforms.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
           <button 
             onClick={() => setShowResults(true)}
