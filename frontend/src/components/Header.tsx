@@ -38,7 +38,16 @@ export const Header: React.FC<HeaderProps> = () => {
         <div className="flex items-center gap-3 md:gap-4">
           {reportReady && (
             <button 
-              onClick={() => window.print()}
+              onClick={() => {
+                const match = location.pathname.match(/^\/score\/(.+)$/);
+                const platform = match ? match[1] : null;
+                if (platform) {
+                  const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+                  window.open(`${apiBase}/report/${platform}`, '_blank');
+                } else {
+                  window.print(); // fallback for comparison or other pages
+                }
+              }}
               className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

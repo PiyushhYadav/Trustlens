@@ -9,7 +9,7 @@ real, verifiable trust scores.
 import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.cache_manager import init_db, get_cached_score, set_cached_score, clear_expired
@@ -22,6 +22,7 @@ from backend.scrapers.review_scraper import scrape_reviews
 from backend.scrapers.policy_scraper import scrape_privacy_policy, discover_policy_url_from_playstore
 from backend.scrapers.breach_scanner import scan_breaches
 from backend.scrapers.security_scanner import scan_security_headers
+from backend.pdf_generator import generate_pdf_report
 
 # Shared Gemini client instance
 gemini = GeminiClient()
@@ -56,6 +57,24 @@ app.add_middleware(
 def health_check():
     """Health check endpoint."""
     return {"status": "TrustLens API is live", "version": "2.0.0"}
+
+
+@app.get("/report")
+async def get_report(platform: str):
+    """Generates a PDF report for a platform."""
+    # Fetch data using existing get_score logic
+    data = await get_score(platform)
+    
+    # Generate PDF
+    pdf_buffer = generate_pdf_report(platform, data)
+    
+    return Response(
+        content=pdf_buffer.getvalue(),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=trustlens-{platform.lower().replace(' ', '-')}-report.pdf"
+        }
+    )
 
 
 @app.get("/score")
