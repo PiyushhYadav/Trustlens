@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 export interface HeaderProps {}
@@ -6,6 +6,18 @@ export interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = () => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const isCompare = location.pathname.startsWith('/compare');
   const isMethodology = location.pathname.startsWith('/methodology');
@@ -59,9 +71,24 @@ export const Header: React.FC<HeaderProps> = () => {
           <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
             Get Extension
           </Link>
-          <button className="hidden md:block w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all border border-stone-200 shadow-sm ml-2">
-            <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
-          </button>
+          <div className="relative hidden md:block" ref={profileRef}>
+            <button 
+              onClick={() => setProfileOpen(!profileOpen)}
+              className={`w-10 h-10 rounded-full overflow-hidden transition-all duration-200 border shadow-sm ml-2 ${
+                profileOpen ? 'scale-110 ring-2 ring-primary border-transparent' : 'border-stone-200 hover:ring-2 hover:ring-primary/20'
+              }`}
+            >
+              <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
+            </button>
+            
+            {profileOpen && (
+              <div className="absolute top-full right-0 mt-3 w-48 bg-white border border-stone-100 rounded-xl shadow-xl py-2 flex flex-col font-body z-50">
+                <button className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors">Settings</button>
+                <Link to="/methodology" onClick={() => setProfileOpen(false)} className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors">About TrustLens</Link>
+                <button className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors border-t border-stone-100 mt-1 pt-3">Sign In</button>
+              </div>
+            )}
+          </div>
           <button 
             className="md:hidden p-2 text-zinc-600 hover:text-zinc-900" 
             onClick={() => setMenuOpen(!menuOpen)}
