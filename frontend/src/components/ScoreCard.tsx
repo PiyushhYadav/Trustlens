@@ -174,8 +174,6 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             })}
           </div>
         </section>
-          </div>
-        </section>
       </div>
       {/* Sidebar / Right Column */}
       <aside className="lg:col-span-4 space-y-12">
