@@ -23,17 +23,18 @@ interface ScoreCardProps {
   data: ScoreData;
 }
 
+export const getGradeStyle = (grade: string) => {
+  switch(grade) {
+    case 'A': 
+    case 'B': return { bg: 'bg-emerald-50 text-emerald-800 border-emerald-200/60', dot: 'bg-emerald-600' };
+    case 'C': 
+    case 'D': return { bg: 'bg-amber-50 text-amber-800 border-amber-200/60', dot: 'bg-amber-600' };
+    case 'F': return { bg: 'bg-rose-50 text-rose-800 border-rose-200/60', dot: 'bg-rose-600' };
+    default: return { bg: 'bg-zinc-50 text-zinc-800 border-zinc-200/60', dot: 'bg-zinc-600' };
+  }
+};
+
 export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
-  const getGradeStyle = (grade: string) => {
-    switch(grade) {
-      case 'A': 
-      case 'B': return { bg: 'bg-emerald-50 text-emerald-800 border-emerald-200/60', dot: 'bg-emerald-600' };
-      case 'C': 
-      case 'D': return { bg: 'bg-amber-50 text-amber-800 border-amber-200/60', dot: 'bg-amber-600' };
-      case 'F': return { bg: 'bg-rose-50 text-rose-800 border-rose-200/60', dot: 'bg-rose-600' };
-      default: return { bg: 'bg-zinc-50 text-zinc-800 border-zinc-200/60', dot: 'bg-zinc-600' };
-    }
-  };
 
   const gradeStyle = getGradeStyle(data.grade);
 
@@ -46,8 +47,9 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   const offset = circumference - (data.score / 100) * circumference;
 
   // Trend line math (dynamically scaled for visual drama)
-  const trendMax = Math.max(...data.trend);
-  const trendMin = Math.min(...data.trend);
+  const safeTrend = data.trend && data.trend.length > 0 ? data.trend : [data.score];
+  const trendMax = Math.max(...safeTrend);
+  const trendMin = Math.min(...safeTrend);
   // Add 10% padding to the range so the line doesn't hit the absolute top/bottom edges
   const padding = (trendMax - trendMin) * 0.1 || 1; 
   const displayMax = trendMax + padding;
@@ -55,16 +57,20 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   const range = displayMax - displayMin;
   
   // map trend values to SVG coordinates (0 to 100 on X, Y from 35 down to 5)
-  const stepX = 100 / (data.trend.length - 1);
-  const points = data.trend.map((val, idx) => {
-    const x = idx * stepX;
-    const normalized = (val - displayMin) / range;
-    const y = 35 - (normalized * 30);
-    return `${x},${y}`;
-  }).join(' ');
+  // CRASH FIX: Guard against length < 2
+  const isFlat = safeTrend.length < 2;
+  const stepX = isFlat ? 100 : 100 / (safeTrend.length - 1);
+  const points = isFlat 
+    ? `0,${35 - (((safeTrend[0] - displayMin) / range) * 30)} 100,${35 - (((safeTrend[0] - displayMin) / range) * 30)}`
+    : safeTrend.map((val, idx) => {
+        const x = idx * stepX;
+        const normalized = (val - displayMin) / range;
+        const y = 35 - (normalized * 30);
+        return `${x},${y}`;
+      }).join(' ');
 
-  const yFirst = 35 - (((data.trend[0] - displayMin) / range) * 30);
-  const yLast = 35 - (((data.trend[data.trend.length - 1] - displayMin) / range) * 30);
+  const yFirst = 35 - (((safeTrend[0] - displayMin) / range) * 30);
+  const yLast = 35 - (((safeTrend[safeTrend.length - 1] - displayMin) / range) * 30);
 
   return (
     <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">

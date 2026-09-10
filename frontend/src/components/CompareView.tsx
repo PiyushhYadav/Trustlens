@@ -5,16 +5,7 @@ const PLATFORMS = [
   "zomato", "swiggy", "instagram", "byjus", "aarogya setu", "paytm", "flipkart"
 ];
 
-const getGradeStyle = (grade: string) => {
-  switch(grade) {
-    case 'A': 
-    case 'B': return { bg: 'bg-emerald-50 text-emerald-800 border-emerald-200/60', dot: 'bg-emerald-600' };
-    case 'C': 
-    case 'D': return { bg: 'bg-amber-50 text-amber-800 border-amber-200/60', dot: 'bg-amber-600' };
-    case 'F': return { bg: 'bg-rose-50 text-rose-800 border-rose-200/60', dot: 'bg-rose-600' };
-    default: return { bg: 'bg-zinc-50 text-zinc-800 border-zinc-200/60', dot: 'bg-zinc-600' };
-  }
-};
+import { getGradeStyle } from './ScoreCard';
 
 export const CompareView: React.FC = () => {
   const [platform1, setPlatform1] = useState("");
@@ -28,6 +19,8 @@ export const CompareView: React.FC = () => {
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+
     const fetchScores = async () => {
       if (!platform1 || !platform2) return;
       
@@ -36,8 +29,8 @@ export const CompareView: React.FC = () => {
       const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform1)}`),
-          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform2)}`)
+          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform1)}`, { signal: controller.signal }),
+          fetch(`${apiBase}/score?platform=${encodeURIComponent(platform2)}`, { signal: controller.signal })
         ]);
         const json1 = await res1.json();
         const json2 = await res2.json();
@@ -52,15 +45,18 @@ export const CompareView: React.FC = () => {
         
         setData1(json1);
         setData2(json2);
-      } catch (e) {
-        if (!active) return;
+      } catch (e: any) {
+        if (!active || e.name === 'AbortError') return;
         setError("Failed to load comparison data.");
       }
       setLoading(false);
     };
 
     fetchScores();
-    return () => { active = false; };
+    return () => { 
+      active = false; 
+      controller.abort();
+    };
   }, [platform1, platform2]);
 
   let summary = "";
@@ -69,8 +65,12 @@ export const CompareView: React.FC = () => {
     let p2Wins = 0;
     const signals = Object.keys(data1.signals);
     signals.forEach(key => {
-      if (data1.signals[key].score > data2.signals[key].score) p1Wins++;
-      else if (data2.signals[key].score > data1.signals[key].score) p2Wins++;
+      const s1 = data1.signals[key];
+      const s2 = data2.signals[key];
+      if (s1 && s2) {
+        if (s1.score > s2.score) p1Wins++;
+        else if (s2.score > s1.score) p2Wins++;
+      }
     });
 
     if (p1Wins > p2Wins) {
@@ -205,6 +205,9 @@ export const CompareView: React.FC = () => {
             {Object.keys(data1.signals).map(key => {
               const sig1 = data1.signals[key];
               const sig2 = data2.signals[key];
+              
+              if (!sig1 || !sig2) return null;
+
               const p1Wins = sig1.score > sig2.score;
               const p2Wins = sig2.score > sig1.score;
 
