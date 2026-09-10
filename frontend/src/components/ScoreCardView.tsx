@@ -3,6 +3,60 @@ import { useParams } from 'react-router-dom';
 import { ScoreCard } from './ScoreCard';
 import type { ScoreData } from './ScoreCard';
 
+const LoadingAnimation = ({ platform }: { platform: string }) => {
+  const [step, setStep] = useState(0);
+  const steps = [
+    "Scanning Exodus Trackers",
+    "Analyzing Play Store Reviews",
+    "Checking HIBP Breaches",
+    "Querying Mozilla Observatory",
+    "Gemini AI Synthesizing..."
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStep(s => Math.min(s + 1, steps.length - 1));
+    }, 1500);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8 flex items-center justify-center min-h-[60vh]">
+      <div className="bg-surface-container-lowest p-10 rounded-2xl border border-stone-100 shadow-sm w-full max-w-md">
+        <h2 className="text-2xl font-headline font-bold text-on-surface mb-8 text-center capitalize">
+          Auditing {platform}...
+        </h2>
+        <div className="space-y-5">
+          {steps.map((label, index) => {
+            const isCompleted = step > index;
+            const isActive = step === index;
+            const isPending = step < index;
+
+            return (
+              <div key={label} className={`flex items-center gap-4 transition-all duration-500 ${isPending ? 'opacity-30 grayscale' : 'opacity-100'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 flex-shrink-0 transition-colors duration-300 ${
+                  isCompleted ? 'bg-primary border-primary text-white' : 
+                  isActive ? 'border-primary border-t-transparent animate-spin' : 
+                  'border-outline-variant text-transparent'
+                }`}>
+                  {isCompleted && (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`font-medium ${isActive ? 'text-primary' : 'text-on-surface'}`}>
+                  {label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </main>
+  );
+};
+
 export const ScoreCardView: React.FC = () => {
   const { platform } = useParams<{ platform: string }>();
   const [data, setData] = useState<ScoreData | null>(null);
@@ -13,11 +67,15 @@ export const ScoreCardView: React.FC = () => {
   useEffect(() => {
     if (!platform) return;
 
+    // Use AbortController for fetch
+    const controller = new AbortController();
+    
     setLoading(true);
     setError('');
     setPending(false);
     const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
-    fetch(`${apiBase}/score?platform=${encodeURIComponent(platform)}`)
+    
+    fetch(`${apiBase}/score?platform=${encodeURIComponent(platform)}`, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to fetch data');
@@ -33,21 +91,17 @@ export const ScoreCardView: React.FC = () => {
         setLoading(false);
       })
       .catch((err) => {
+        if (err.name === 'AbortError') return;
         console.error(err);
         setError('Failed to load trust score. Make sure the backend is running.');
         setLoading(false);
       });
+
+      return () => controller.abort();
   }, [platform]);
 
   if (loading) {
-    return (
-      <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8 flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-on-surface-variant font-medium">Analyzing Veracity Signals...</p>
-        </div>
-      </main>
-    );
+    return <LoadingAnimation platform={platform || 'app'} />;
   }
 
   if (error) {
