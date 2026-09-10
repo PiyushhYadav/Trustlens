@@ -167,7 +167,14 @@ async def get_score(platform: str):
     # Derive DPDP compliance from policy analysis
     dpdp_compliant = policy_analysis.get("dpdp_compliant", False)
     dpdp_issues = policy_analysis.get("dpdp_issues", [])
-    dpdp_score = 16 if dpdp_compliant else max(5, 20 - len(dpdp_issues) * 3)
+    is_policy_fallback = policy_analysis.get("source") == "fallback" or not policy_analysis.get("verified", True)
+
+    if is_policy_fallback:
+        dpdp_score = 10
+        security_summary = "Analysis unavailable — midpoint score shown, not a verified result."
+    else:
+        dpdp_score = 16 if dpdp_compliant else max(5, 20 - len(dpdp_issues) * 3)
+        security_summary = "DPDP Compliant: 0 issues found" if len(dpdp_issues) == 0 else f"DPDP Non-Compliant: {len(dpdp_issues)} issue(s) found."
 
     # 6. Assemble sub_scores
     sub_scores = {
@@ -185,8 +192,8 @@ async def get_score(platform: str):
         "compliance": {
             "score": dpdp_score,
             "max": 20,
-            "summary": "DPDP Act 2023 Compliant: 0 issues found" if (dpdp_compliant or len(dpdp_issues) == 0) else f"DPDP Non-Compliant: {len(dpdp_issues)} issue(s) found",
-            "compliant": dpdp_compliant or len(dpdp_issues) == 0,
+            "summary": security_summary,
+            "compliant": False if is_policy_fallback else (dpdp_compliant or len(dpdp_issues) == 0),
             "issues": dpdp_issues,
             "source": policy_analysis.get("source", "gemini_ai_policy_analysis"),
             "verified": policy_analysis.get("source") != "fallback",
