@@ -60,15 +60,26 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   
   // map trend values to SVG coordinates (0 to 100 on X, Y from 35 down to 5)
   const stepX = 100 / (safeTrend.length - 1);
-  const points = safeTrend.map((val, idx) => {
+  const pointCoords = safeTrend.map((val, idx) => {
     const x = idx * stepX;
     const normalized = (val - displayMin) / range;
     const y = 35 - (normalized * 30);
-    return `${x},${y}`;
-  }).join(' ');
+    return { x, y };
+  });
 
-  const yFirst = 35 - (((safeTrend[0] - displayMin) / range) * 30);
-  const yLast = 35 - (((safeTrend[safeTrend.length - 1] - displayMin) / range) * 30);
+  // Generate smoothed path (Cubic Bezier)
+  let smoothPath = '';
+  if (pointCoords.length > 0) {
+    smoothPath = `M ${pointCoords[0].x},${pointCoords[0].y}`;
+    for (let i = 1; i < pointCoords.length; i++) {
+       const p0 = pointCoords[i - 1];
+       const p1 = pointCoords[i];
+       const cpX = (p0.x + p1.x) / 2;
+       smoothPath += ` C ${cpX},${p0.y} ${cpX},${p1.y} ${p1.x},${p1.y}`;
+    }
+  }
+  
+  const fillPath = `${smoothPath} L 100,40 L 0,40 Z`;
 
   return (
     <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -192,16 +203,38 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
           </div>
           <div className="h-40 w-full flex items-end justify-between gap-1 relative">
             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-              <polyline 
-                points={points} 
+              <defs>
+                <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#005dac" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#005dac" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              {/* Gridlines */}
+              <line x1="0" y1="10" x2="100" y2="10" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
+              <line x1="0" y1="20" x2="100" y2="20" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
+              <line x1="0" y1="30" x2="100" y2="30" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
+
+              {/* Gradient Fill under the line */}
+              <path 
+                d={fillPath} 
+                fill="url(#trendGradient)" 
+              />
+              
+              {/* Smoothed Trend Line */}
+              <path 
+                d={smoothPath} 
                 fill="none" 
                 stroke="#005dac" 
                 strokeWidth="2.5" 
                 strokeLinejoin="round" 
                 strokeLinecap="round"
               />
-              <circle cx="0" cy={yFirst} fill="#005dac" r="2"></circle>
-              <circle cx="100" cy={yLast} fill="#005dac" r="2"></circle>
+
+              {/* Monthly Dots */}
+              {pointCoords.map((pt, i) => (
+                <circle key={i} cx={pt.x} cy={pt.y} r="1.25" fill="#005dac" className="transition-all hover:r-2" />
+              ))}
             </svg>
           </div>
           <div className="mt-6 flex justify-between text-[10px] font-bold font-label uppercase tracking-widest text-on-surface-variant/60">
