@@ -149,15 +149,15 @@ Return ONLY valid JSON."""
         result = await self.analyze(prompt)
         if not result or "score" not in result:
             return {
-                "score": 7, "max": 15,
-                "summary": "Unable to analyze complaints.",
+                "score": 15, "max": 15,
+                "summary": "Analysis unavailable — no penalty applied.",
                 "source": "fallback", "verified": False,
             }
 
         try:
             result["score"] = max(0, min(15, int(result["score"])))
         except (TypeError, ValueError):
-            result["score"] = 7
+            result["score"] = 15
 
         result["max"] = 15
         result["source"] = "play_store_reviews"
