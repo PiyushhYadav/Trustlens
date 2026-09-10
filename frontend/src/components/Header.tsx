@@ -25,7 +25,10 @@ export const Header: React.FC<HeaderProps> = () => {
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100">
       <nav className="flex justify-between items-center w-full px-4 md:px-8 py-4 md:py-5 max-w-screen-2xl mx-auto">
         <div className="flex items-center gap-12">
-          <Link className="text-2xl font-serif font-bold text-zinc-900 tracking-tight" to="/">TrustLens</Link>
+          <Link className="flex items-center gap-3 text-2xl font-serif font-bold text-zinc-900 tracking-tight" to="/">
+            <img src="/favicon.svg" alt="TrustLens" className="w-8 h-8 drop-shadow-sm" />
+            TrustLens
+          </Link>
           <div className="hidden md:flex space-x-8">
             <Link className={`${isIntelligence ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/">Intelligence</Link>
             <Link className={`${isCompare ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/compare">Comparison</Link>
