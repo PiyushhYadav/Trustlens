@@ -306,7 +306,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                   <span className="material-symbols-outlined text-xl">security</span>
                 </div>
               );
-            } else if (key === 'review') {
+            } else if (key === 'review' || key === 'complaint') {
               title = 'User Complaints';
               desc = 'Analyzes user complaints from multiple platforms.';
               icon = (
@@ -329,7 +329,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {icon}
-                    <h4 className="text-sm font-bold text-zinc-900 font-headline truncate max-w-[120px] sm:max-w-none">{title}</h4>
+                    <h4 className="text-base font-bold text-zinc-900 font-headline truncate max-w-[120px] sm:max-w-none">{title}</h4>
                   </div>
                   {signal.is_fallback ? (
                     <span className="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 border border-amber-100/50 flex-shrink-0">
