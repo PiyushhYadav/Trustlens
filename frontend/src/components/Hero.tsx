@@ -38,9 +38,9 @@ export const Hero: React.FC<HeroProps> = () => {
         </form>
         <div className="mt-8 flex flex-wrap gap-3">
           <span className="text-xs font-label uppercase tracking-widest text-zinc-400 self-center mr-2">Trending:</span>
-          <button type="button" onClick={() => navigate('/score/zomato')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Zomato</button>
-          <button type="button" onClick={() => navigate('/score/instagram')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Instagram</button>
-          <button type="button" onClick={() => navigate('/score/paytm')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Paytm</button>
+          <button type="button" onClick={() => navigate('/score/telegram')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Telegram</button>
+          <button type="button" onClick={() => navigate('/score/tinder')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Tinder</button>
+          <button type="button" onClick={() => navigate('/score/aarogya%20setu')} className="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:bg-zinc-200 transition-colors">Aarogya Setu</button>
         </div>
       </div>
       <div className="hidden lg:block lg:col-span-4 relative">
