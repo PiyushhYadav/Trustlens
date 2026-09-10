@@ -178,6 +178,10 @@ async def get_score(platform: str):
         },
     }
 
+    # Explicitly set is_fallback for programmatic consumption
+    for key, signal in sub_scores.items():
+        signal["is_fallback"] = (signal.get("source") == "fallback" or not signal.get("verified", True))
+
     # Build the result
     default_desc = f"{display_name} is a {platform_info.get('category', 'digital platform').lower()} operating in the Indian digital ecosystem."
     description_text = platform_info.get("description", default_desc)
