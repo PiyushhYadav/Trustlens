@@ -47,6 +47,16 @@ export const CompareView: React.FC = () => {
           fetch(`${apiBase}/score?platform=${encodeURIComponent(platform1)}`, { signal: controller.signal }),
           fetch(`${apiBase}/score?platform=${encodeURIComponent(platform2)}`, { signal: controller.signal })
         ]);
+        
+        if (!res1.ok) {
+           const errData = await res1.json().catch(() => null);
+           throw new Error(errData?.detail || `Failed to fetch data for ${platform1}`);
+        }
+        if (!res2.ok) {
+           const errData = await res2.json().catch(() => null);
+           throw new Error(errData?.detail || `Failed to fetch data for ${platform2}`);
+        }
+
         const json1 = await res1.json();
         const json2 = await res2.json();
         
@@ -62,7 +72,7 @@ export const CompareView: React.FC = () => {
         setData2(json2);
       } catch (e: any) {
         if (!active || e.name === 'AbortError') return;
-        setError("Failed to load comparison data.");
+        setError(e.message || "Failed to load comparison data.");
       }
       setLoading(false);
     };
