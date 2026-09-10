@@ -11,6 +11,16 @@ export const Header: React.FC<HeaderProps> = () => {
   const isMethodology = location.pathname.startsWith('/methodology');
   const isIntelligence = !isCompare && !isMethodology;
 
+  const [reportReady, setReportReady] = useState(false);
+
+  React.useEffect(() => {
+    const handleReportReady = (e: any) => {
+      setReportReady(e.detail);
+    };
+    window.addEventListener('reportReady', handleReportReady);
+    return () => window.removeEventListener('reportReady', handleReportReady);
+  }, []);
+
   return (
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100">
       <nav className="flex justify-between items-center w-full px-4 md:px-8 py-4 md:py-5 max-w-screen-2xl mx-auto">
@@ -23,8 +33,19 @@ export const Header: React.FC<HeaderProps> = () => {
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4">
+          {reportReady && (
+            <button 
+              onClick={() => window.print()}
+              className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
+              </svg>
+              Download Report
+            </button>
+          )}
           <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
-            Download Extension
+            Get Extension
           </Link>
           <button className="hidden md:block w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all border border-stone-200 shadow-sm ml-2">
             <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />

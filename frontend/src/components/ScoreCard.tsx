@@ -121,21 +121,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 <h1 className="text-4xl md:text-6xl font-headline text-on-surface leading-[1.15] font-bold capitalize">
                   {platform}
                 </h1>
-                <button 
-                  onClick={() => window.print()} 
-                  className="print:hidden hidden md:flex px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-bold tracking-wide uppercase transition-colors items-center gap-2"
-                >
-                  Download Report
-                </button>
               </div>
-            </div>
-            <div className="md:hidden print:hidden mt-2">
-               <button 
-                  onClick={() => window.print()} 
-                  className="w-full px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-bold tracking-wide uppercase transition-colors flex justify-center items-center gap-2"
-                >
-                  Download Report
-                </button>
             </div>
             <p className="text-xl text-on-surface-variant leading-relaxed font-body">
               {data.description || "An automated trust and privacy audit based on five independent veracity signals."}

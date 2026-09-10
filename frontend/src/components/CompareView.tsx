@@ -84,6 +84,12 @@ export const CompareView: React.FC = () => {
     };
   }, [platform1, platform2]);
 
+  useEffect(() => {
+    // Notify header when report is ready for download
+    window.dispatchEvent(new CustomEvent('reportReady', { detail: !loading && (data1 || data2) }));
+    return () => { window.dispatchEvent(new CustomEvent('reportReady', { detail: false })); };
+  }, [loading, data1, data2]);
+
   let summary = "";
   if (data1 && data2 && !loading) {
     let p1Wins = 0;
