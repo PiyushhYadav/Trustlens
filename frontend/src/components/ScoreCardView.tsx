@@ -76,9 +76,10 @@ export const ScoreCardView: React.FC = () => {
     const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
     
     fetch(`${apiBase}/score?platform=${encodeURIComponent(platform)}`, { signal: controller.signal })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error('Failed to fetch data');
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.detail || 'Failed to fetch data');
         }
         return res.json();
       })
@@ -93,7 +94,9 @@ export const ScoreCardView: React.FC = () => {
       .catch((err) => {
         if (err.name === 'AbortError') return;
         console.error(err);
-        setError('Failed to load trust score. Make sure the backend is running.');
+        setError(err.message === 'Failed to fetch data' 
+          ? 'Failed to load trust score. Make sure the backend is running.' 
+          : err.message);
         setLoading(false);
       });
 
