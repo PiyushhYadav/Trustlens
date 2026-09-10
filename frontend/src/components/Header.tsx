@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
         <div className="flex items-center gap-3 md:gap-4">
           <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
-            Get Extension
+            Download Extension
           </Link>
           <button className="hidden md:block w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all border border-stone-200 shadow-sm ml-2">
             <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = () => {
           <Link onClick={() => setMenuOpen(false)} className={`block ${isCompare ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/compare">Comparison</Link>
           <Link onClick={() => setMenuOpen(false)} className={`block ${isMethodology ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/methodology">Methodology</Link>
           <hr className="border-stone-100" />
-          <Link onClick={() => setMenuOpen(false)} to="/extension-mockup" className="block text-primary font-medium">Get Extension</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/extension-mockup" className="block text-primary font-medium">Download Extension</Link>
         </div>
       )}
     </header>
