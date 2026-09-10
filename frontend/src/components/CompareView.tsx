@@ -198,7 +198,7 @@ export const CompareView: React.FC = () => {
               setShowResults(false);
             }}
             options={availablePlatforms}
-            placeholder="Select platform..."
+            placeholder="Search Platform..."
           />
           <div className="flex items-center text-on-surface-variant font-bold font-label">VS</div>
           <SearchableSelect 
@@ -208,7 +208,7 @@ export const CompareView: React.FC = () => {
               setShowResults(false);
             }}
             options={availablePlatforms}
-            placeholder="Select platform..."
+            placeholder="Search Platform..."
           />
           <button 
             onClick={() => setShowResults(true)}
