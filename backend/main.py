@@ -59,7 +59,7 @@ def health_check():
     return {"status": "TrustLens API is live", "version": "2.0.0"}
 
 
-@app.get("/report")
+@app.get("/report/{platform}")
 async def get_report(platform: str):
     """Generates a PDF report for a platform."""
     # Fetch data using existing get_score logic
