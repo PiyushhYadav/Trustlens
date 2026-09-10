@@ -1,8 +1,43 @@
 import os
+import base64
 from io import BytesIO
 from jinja2 import Template
 from xhtml2pdf import pisa
 from datetime import datetime
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+def generate_trend_chart(trend_data):
+    if not trend_data or len(trend_data) == 0:
+        return ""
+    # Ensure exactly 12 points
+    if len(trend_data) < 12:
+        trend_data = trend_data + [trend_data[-1]] * (12 - len(trend_data))
+    elif len(trend_data) > 12:
+        trend_data = trend_data[-12:]
+        
+    plt.figure(figsize=(8, 2.5), dpi=150)
+    plt.plot(range(1, 13), trend_data, marker='o', markersize=5, color='#005dac', linewidth=2)
+    plt.fill_between(range(1, 13), trend_data, alpha=0.1, color='#005dac')
+    plt.ylim(0, 100)
+    plt.xlim(1, 12)
+    plt.xticks(range(1, 13), [f"M{i}" for i in range(1, 13)], color='#6b7280')
+    plt.yticks(color='#6b7280')
+    plt.grid(axis='y', linestyle='--', alpha=0.4)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['left'].set_color('#e5e7eb')
+    plt.gca().spines['bottom'].set_color('#e5e7eb')
+    plt.tight_layout()
+    
+    buf = BytesIO()
+    plt.savefig(buf, format='png', transparent=True)
+    buf.seek(0)
+    b64 = base64.b64encode(buf.read()).decode('utf-8')
+    plt.close()
+    return f"data:image/png;base64,{b64}"
+
 
 REPORT_TEMPLATE = """
 <!DOCTYPE html>
@@ -25,59 +60,118 @@ REPORT_TEMPLATE = """
     body {
         font-family: Helvetica, sans-serif;
         color: #1f2937;
-        line-height: 1.5;
+        line-height: 1.6;
     }
     h1, h2, h3 { color: #005dac; font-family: Times, serif; }
+    
     .badge {
         display: inline-block;
-        padding: 5px 10px;
-        background-color: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        border-radius: 5px;
+        padding: 6px 14px;
+        border-radius: 9999px;
         font-weight: bold;
+        font-size: 0.9em;
     }
-    .badge-green { background-color: #d1fae5; color: #065f46; border-color: #10b981; }
-    .badge-red { background-color: #fee2e2; color: #991b1b; border-color: #ef4444; }
+    .badge-green { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .badge-red { background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+    
+    .grade-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 1.4em;
+        margin-top: 10px;
+        border: 2px solid;
+    }
+    .grade-A { background-color: #dcfce7; color: #166534; border-color: #22c55e; }
+    .grade-B { background-color: #d1fae5; color: #065f46; border-color: #10b981; }
+    .grade-C { background-color: #fef08a; color: #854d0e; border-color: #eab308; }
+    .grade-D { background-color: #fed7aa; color: #9a3412; border-color: #f97316; }
+    .grade-F { background-color: #fee2e2; color: #991b1b; border-color: #ef4444; }
+
     .fallback-note {
-        color: #b45309;
-        font-size: 0.85em;
+        color: #d97706;
+        font-size: 0.8em;
         font-style: italic;
+        margin-top: 4px;
+        display: block;
     }
     .score-circle {
-        font-size: 2.5em;
+        font-size: 3em;
         font-weight: bold;
         color: #005dac;
     }
     .page-break { -pdf-pagebreak: true; }
     
-    table.signals { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table.signals th, table.signals td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; vertical-align: top; }
-    table.signals th { background-color: #f3f4f6; }
+    /* Signal Cards */
+    .signal-card {
+        page-break-inside: avoid;
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+    .signal-header {
+        margin-bottom: 12px;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 10px;
+    }
+    .signal-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #111827;
+        margin: 0;
+    }
+    .progress-bg {
+        background-color: #f3f4f6;
+        border-radius: 6px;
+        height: 10px;
+        width: 100%;
+        margin: 8px 0;
+    }
+    .progress-fill {
+        background-color: #005dac;
+        height: 10px;
+        border-radius: 6px;
+    }
     
-    /* Bar chart using table */
-    table.chart { width: 100%; border-bottom: 2px solid #ccc; height: 150px; margin-top: 20px; }
-    table.chart td { vertical-align: bottom; text-align: center; padding: 0 5px; }
-    .bar { background-color: #005dac; width: 100%; }
-    .bar-label { font-size: 0.7em; margin-top: 5px; color: #6b7280; }
+    .chart-container {
+        text-align: center;
+        margin: 30px 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        background-color: #f9fafb;
+    }
+    .chart-img {
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    ul.action-list { padding-left: 20px; }
+    ul.action-list li { margin-bottom: 12px; }
 </style>
 </head>
 <body>
     <div id="header_content">
-        <strong style="color:#005dac;">TrustLens</strong> | Privacy &amp; Security Report for {{ platform.title() }}
+        <strong style="color:#005dac;">TrustLens</strong> <span style="color:#9ca3af;">|</span> Privacy &amp; Security Report for {{ platform.title() }}
     </div>
     
     <div id="footer_content" style="text-align: right; font-size: 0.8em; color: #6b7280;">
         Generated by TrustLens - Page <pdf:pagenumber>
     </div>
 
-    <h1 style="text-align: center; font-size: 2.5em;">TrustLens Report</h1>
-    <h2 style="text-align: center; color: #374151;">{{ platform.title() }}</h2>
+    <h1 style="text-align: center; font-size: 2.8em; margin-bottom: 0;">TrustLens Report</h1>
+    <h2 style="text-align: center; color: #4b5563; margin-top: 5px;">{{ platform.title() }}</h2>
     <p style="text-align: center; color: #6b7280;">Generated on: {{ date }}</p>
     
-    <div style="text-align: center; margin: 40px 0;">
-        <div class="score-circle">{{ data.score }} / 100</div>
-        <h2 style="margin-top: 5px;">Grade: {{ data.grade }}</h2>
-        <p style="margin: 0;">{{ data.grade_desc }}</p>
+    <div style="text-align: center; margin: 50px 0;">
+        <div class="score-circle">{{ data.score }} <span style="font-size: 0.5em; color: #9ca3af;">/ 100</span></div>
+        <div class="grade-badge grade-{{ data.grade[0] if data.grade else 'C' }}">Grade: {{ data.grade }}</div>
+        <p style="margin-top: 15px; font-size: 1.1em; max-width: 80%; margin-left: auto; margin-right: auto; color: #4b5563;">
+            {{ data.grade_desc }}
+        </p>
     </div>
 
     <div style="text-align: center; margin-bottom: 40px;">
@@ -86,56 +180,57 @@ REPORT_TEMPLATE = """
         </span>
     </div>
 
-    <h3>About {{ platform.title() }}</h3>
-    <p>{{ data.description }}</p>
+    <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb;">
+        <h3 style="margin-top: 0;">About {{ platform.title() }}</h3>
+        <p style="margin-bottom: 0; color: #374151;">{{ data.description }}</p>
+    </div>
 
     <div class="page-break"></div>
 
     <h2>Signal Breakdown</h2>
-    <table class="signals">
-        <thead>
-            <tr>
-                <th style="width: 25%;">Signal</th>
-                <th style="width: 20%;">Score</th>
-                <th style="width: 55%;">Analysis</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for key, signal in data.signals.items() %}
-            <tr>
-                <td><strong>{{ key.upper() }}</strong></td>
-                <td>
-                    <strong style="font-size: 1.2em;">{{ signal.score }}</strong> / {{ signal.max }}<br>
-                    {% if signal.is_fallback %}
-                    <div class="fallback-note">(estimated &mdash; analysis unavailable)</div>
-                    {% endif %}
-                </td>
-                <td>{{ signal.summary }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="page-break"></div>
+    
+    {% for key, signal in data.signals.items() %}
+    <div class="signal-card">
+        <div class="signal-header">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">
+                        <h3 class="signal-title">{{ key.replace('_', ' ').title() }}</h3>
+                    </td>
+                    <td style="width: 30%; text-align: right;">
+                        <strong style="font-size: 1.2em; color: #005dac;">{{ signal.score }}</strong> / {{ signal.max }}
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="progress-bg">
+                <div class="progress-fill" style="width: {{ (signal.score / signal.max * 100)|round(0) }}%;"></div>
+            </div>
+            
+            {% if signal.is_fallback %}
+            <span class="fallback-note">(estimated &mdash; analysis unavailable)</span>
+            {% endif %}
+        </div>
+        <div style="color: #4b5563;">
+            {{ signal.summary }}
+        </div>
+    </div>
+    {% endfor %}
 
     <h2>12-Month Score Trend</h2>
-    <table class="chart">
-        <tr>
-            {% for val in data.trend %}
-            <td>
-                <div style="font-size: 0.7em; margin-bottom: 2px;">{{ val }}</div>
-                <div class="bar" style="height: {{ val }}px;"></div>
-                <div class="bar-label">M{{ loop.index }}</div>
-            </td>
-            {% endfor %}
-        </tr>
-    </table>
+    <div class="chart-container">
+        {% if chart_b64 %}
+        <img src="{{ chart_b64 }}" class="chart-img" />
+        {% else %}
+        <p>Chart data unavailable.</p>
+        {% endif %}
+    </div>
     
     <div style="margin-top: 40px;">
         <h2>Action Steps</h2>
-        <ul>
+        <ul class="action-list">
             {% for step in data.action_steps %}
-            <li style="margin-bottom: 10px;">{{ step }}</li>
+            <li>{{ step }}</li>
             {% endfor %}
         </ul>
     </div>
@@ -145,15 +240,17 @@ REPORT_TEMPLATE = """
 """
 
 def generate_pdf_report(platform: str, data: dict) -> BytesIO:
+    chart_b64 = generate_trend_chart(data.get("trend", []))
+    
     template = Template(REPORT_TEMPLATE)
     html_content = template.render(
         platform=platform,
         data=data,
+        chart_b64=chart_b64,
         date=datetime.now().strftime("%B %d, %Y")
     )
     
     pdf_buffer = BytesIO()
-    # Create PDF
     pisa_status = pisa.CreatePDF(
         html_content,
         dest=pdf_buffer
@@ -163,4 +260,5 @@ def generate_pdf_report(platform: str, data: dict) -> BytesIO:
         raise Exception(f"PDF generation failed: {pisa_status.err}")
         
     pdf_buffer.seek(0)
+    return pdf_buffer
     return pdf_buffer
