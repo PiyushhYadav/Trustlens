@@ -263,6 +263,14 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "policy_url": "https://byjus.com/privacy-policy/",
         "category": "EdTech",
     },
+    "truecaller": {
+        "display_name": "Truecaller",
+        "android_package": "com.truecaller",
+        "domain": "truecaller.com",
+        "policy_url": "https://www.truecaller.com/privacy-policy",
+        "category": "Communication",
+        "description": "Truecaller is a smartphone application that provides caller identification, call-blocking, flash-messaging, and call-recording functionality."
+    },
     "aarogya setu": {
         "display_name": "Aarogya Setu",
         "android_package": "nic.goi.aarogyasetu",
