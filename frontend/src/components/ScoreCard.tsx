@@ -175,27 +175,115 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
         </section>
 
         {/* Data Transparency Panel */}
-        <section className="space-y-6 bg-zinc-50 p-8 rounded-2xl border border-stone-200">
-          <h3 className="text-sm font-label uppercase tracking-[0.2em] text-on-surface-variant font-bold flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">verified_user</span>
-            Data Sources & Verification
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(data.signals).map(([key, signal]) => (
-               <div key={key} className="flex items-center gap-3 text-sm font-sans text-zinc-600 bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
-                 {signal.verified ? (
-                   <span className="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
-                 ) : (
-                   <span className="material-symbols-outlined text-amber-500 text-lg">warning</span>
-                 )}
-                 <div className="truncate">
-                   <div className="uppercase text-[10px] tracking-wider font-bold text-zinc-400">{key}</div>
-                   <div className="capitalize font-medium truncate" title={signal.source?.replace(/_/g, ' ') || 'Unknown'}>
-                     {signal.source?.replace(/_/g, ' ') || 'Unknown'}
-                   </div>
-                 </div>
-               </div>
-            ))}
+        <section className="bg-white p-8 rounded-[2rem] border border-stone-100 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 text-primary flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-2xl">security</span>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold font-headline text-zinc-900 mb-1">
+                  Data Sources & Verification
+                </h3>
+                <p className="text-sm text-zinc-500 font-body">
+                  We collect and verify information from multiple trusted sources to ensure an unbiased and accurate analysis.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-blue-50/50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100/50 flex-shrink-0">
+              <span className="material-symbols-outlined text-sm">info</span>
+              Last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(data.signals).map(([key, signal]) => {
+              let title = key;
+              let desc = '';
+              let icon = null;
+              if (key === 'breach') {
+                title = 'Breach Data';
+                desc = 'Checks for data breaches and security incidents.';
+                icon = (
+                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                  </div>
+                );
+              } else if (key === 'policy') {
+                title = 'Company Policy';
+                desc = 'Analyzes privacy policy and terms of service.';
+                icon = (
+                  <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-xl">description</span>
+                  </div>
+                );
+              } else if (key === 'security') {
+                title = 'Compliance Records';
+                desc = 'Checks regulatory compliance and legal records.';
+                icon = (
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-xl">security</span>
+                  </div>
+                );
+              } else if (key === 'review') {
+                title = 'User Complaints';
+                desc = 'Analyzes user complaints from multiple platforms.';
+                icon = (
+                  <div className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-xl">error</span>
+                  </div>
+                );
+              } else if (key === 'tracker') {
+                title = 'Tracker Analysis';
+                desc = 'Detects third-party trackers and data collection scripts.';
+                icon = (
+                  <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-xl">database</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={key} className="bg-white border border-stone-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      {icon}
+                      <h4 className="text-sm font-bold text-zinc-900 font-headline">{title}</h4>
+                    </div>
+                    {signal.is_fallback ? (
+                      <span className="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 border border-amber-100/50">
+                        <span className="material-symbols-outlined text-[14px]">warning</span>
+                        Fallback
+                      </span>
+                    ) : (
+                      <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 border border-emerald-100/50">
+                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                        Verified
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-500 font-body leading-relaxed flex-grow pl-[52px]">
+                    {desc}
+                  </p>
+                  <hr className="border-stone-100 my-4" />
+                  <a href="#" onClick={(e) => e.preventDefault()} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline w-fit pl-[52px]">
+                    View source <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="bg-blue-50 text-blue-800 p-4 rounded-xl flex items-start gap-3 mt-4 text-sm font-body border border-blue-100/50">
+            <span className="material-symbols-outlined text-blue-600 mt-0.5">info</span>
+            <p>
+              We use a combination of automated scanning and manual verification to ensure accuracy. <a href="/methodology" className="text-blue-600 font-medium hover:underline">Learn more about our methodology.</a>
+            </p>
           </div>
         </section>
       </div>
