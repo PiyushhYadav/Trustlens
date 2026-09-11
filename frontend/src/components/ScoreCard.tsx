@@ -146,6 +146,26 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             <p className="text-xl text-on-surface-variant leading-relaxed font-body">
               {data.description || "An automated trust and privacy audit based on five independent veracity signals."}
             </p>
+            <div className="flex flex-wrap items-center gap-8 pt-2">
+              <div className="flex items-center gap-2.5 text-[15px] font-semibold text-slate-600">
+                <span className="material-symbols-outlined text-xl">location_on</span>
+                India
+              </div>
+              {data.platform_info?.category && (
+                <div className="flex items-center gap-2.5 text-[15px] font-semibold text-slate-600">
+                  <span className="material-symbols-outlined text-xl">domain</span>
+                  {data.platform_info.category}
+                </div>
+              )}
+              {data.platform_info?.domain && (
+                <div className="flex items-center gap-2.5 text-[15px] font-semibold text-slate-600">
+                  <span className="material-symbols-outlined text-xl">link</span>
+                  <a href={`https://${data.platform_info.domain}`} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-slate-800 transition-colors">
+                    {data.platform_info.domain}
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
