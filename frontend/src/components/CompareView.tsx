@@ -160,6 +160,32 @@ export const CompareView: React.FC = () => {
     return () => { window.dispatchEvent(new CustomEvent('reportReady', { detail: false })); };
   }, [loading, data1, data2]);
 
+  useEffect(() => {
+    const handleDownload = async () => {
+      if (!data1 || !data2) return;
+      const element = document.getElementById('compare-report-content');
+      if (element) {
+        // Generate PDF from DOM
+        try {
+          const html2pdf = (await import('html2pdf.js')).default;
+          const opt = {
+            margin:       0.5,
+            filename:     `${platform1}-vs-${platform2}-trustlens-report.pdf`,
+            image:        { type: 'jpeg' as const, quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'in' as const, format: 'a4' as const, orientation: 'portrait' as const }
+          };
+          html2pdf().set(opt).from(element).save();
+        } catch (e) {
+          console.error("Failed to generate PDF:", e);
+        }
+      }
+    };
+
+    window.addEventListener('triggerCompareDownload', handleDownload);
+    return () => window.removeEventListener('triggerCompareDownload', handleDownload);
+  }, [data1, data2, platform1, platform2]);
+
   let summary = "";
   if (data1 && data2 && !loading) {
     let p1Wins = 0;
@@ -173,18 +199,17 @@ export const CompareView: React.FC = () => {
         else if (s2.score > s1.score) p2Wins++;
       }
     });
-
     if (p1Wins > p2Wins) {
-      summary = `${platform1.charAt(0).toUpperCase() + platform1.slice(1)} wins on ${p1Wins} of ${signals.length} signals.`;
+      summary = `${platform1} outperforms ${platform2} on ${p1Wins} out of 5 key trust signals.`;
     } else if (p2Wins > p1Wins) {
-      summary = `${platform2.charAt(0).toUpperCase() + platform2.slice(1)} wins on ${p2Wins} of ${signals.length} signals.`;
+      summary = `${platform2} outperforms ${platform1} on ${p2Wins} out of 5 key trust signals.`;
     } else {
       summary = `It's a tie! Both platforms win on an equal number of signals.`;
     }
   }
 
   return (
-    <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8">
+    <main id="compare-report-content" className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8 bg-surface">
       <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
         <div>
           <h1 className="text-4xl md:text-5xl font-headline font-bold text-on-surface mb-4">Platform Comparison</h1>

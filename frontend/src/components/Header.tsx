@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = () => {
                   const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
                   window.open(`${apiBase}/report/${platform}`, '_blank');
                 } else {
-                  window.print(); // fallback for comparison or other pages
+                  window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
                 }
               }}
               className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
