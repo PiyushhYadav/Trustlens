@@ -290,12 +290,12 @@ REPORT_TEMPLATE = """
                     <table class="signal-header">
                         <tr>
                             <td width="70%"><span class="signal-name">&#128172; Complaint</span></td>
-                            <td width="30%" class="signal-score">{{ data.signals.review.score }}<span style="font-size:8pt; color:#6b7280;">/{{ data.signals.review.max }}</span></td>
+                            <td width="30%" class="signal-score">{{ data.signals.complaint.score }}<span style="font-size:8pt; color:#6b7280;">/{{ data.signals.complaint.max }}</span></td>
                         </tr>
                     </table>
-                    <img src="{{ bar_b64.review }}" class="signal-bar"/>
-                    {% if data.signals.review.is_fallback %}<div class="signal-est">EST.</div>{% endif %}
-                    <div class="signal-summary">{{ data.signals.review.summary }}</div>
+                    <img src="{{ bar_b64.complaint }}" class="signal-bar"/>
+                    {% if data.signals.complaint.is_fallback %}<div class="signal-est">EST.</div>{% endif %}
+                    <div class="signal-summary">{{ data.signals.complaint.summary }}</div>
                     <div class="view-details">View details &rarr;</div>
                 </div>
             </td>
@@ -426,9 +426,13 @@ def generate_pdf_report(platform: str, data: dict) -> BytesIO:
     trend_b64 = generate_trend_chart(data.get("trend", []))
     donut_b64 = generate_donut_chart(data.get("score", 0))
     
-    bar_b64 = {}
-    for k, v in data.get("signals", {}).items():
-        bar_b64[k] = generate_bar_chart(v.get("score", 0), v.get("max", 15))
+    bar_b64 = {
+        "breach": generate_bar_chart(data["signals"]["breach"]["score"], data["signals"]["breach"]["max"]),
+        "policy": generate_bar_chart(data["signals"]["policy"]["score"], data["signals"]["policy"]["max"]),
+        "compliance": generate_bar_chart(data["signals"]["compliance"]["score"], data["signals"]["compliance"]["max"]),
+        "complaint": generate_bar_chart(data["signals"]["complaint"]["score"], data["signals"]["complaint"]["max"]),
+        "tracker": generate_bar_chart(data["signals"]["tracker"]["score"], data["signals"]["tracker"]["max"])
+    }
         
     date_str = datetime.now().strftime("%B %d, %Y")
     date_id = datetime.now().strftime("%Y%m%d")
