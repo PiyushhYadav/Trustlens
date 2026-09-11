@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustLens</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="header">
+      <div class="brand">
+        <div class="logo">TL</div>
+
+        <div>
+          <div class="brand-name">TrustLens</div>
+          <div class="brand-tagline">Privacy intelligence</div>
+        </div>
+      </div>
+
+      <button id="refreshBtn" class="icon-button" title="Refresh">
+        ↻
+      </button>
+    </header>
+
+    <main>
+
+      <!-- Loading -->
+      <section id="loadingState" class="state">
+        <div class="spinner"></div>
+        <h2>Analyzing website</h2>
+        <p id="loadingDomain">
+          Checking the current website...
+        </p>
+      </section>
+
+      <!-- Unsupported -->
+      <section id="unsupportedState" class="state hidden">
+        <div class="state-icon">?</div>
+
+        <h2>Platform not supported</h2>
+
+        <p id="unsupportedMessage">
+          TrustLens does not have an analysis for this website yet.
+        </p>
+
+        <button id="openTrustLensBtn" class="primary-button">
+          Open TrustLens
+        </button>
+      </section>
+
+      <!-- Error -->
+      <section id="errorState" class="state hidden">
+        <div class="state-icon error-icon">!</div>
+
+        <h2>Something went wrong</h2>
+
+        <p id="errorMessage">
+          Unable to retrieve the TrustLens score.
+        </p>
+
+        <button id="retryBtn" class="primary-button">
+          Try Again
+        </button>
+      </section>
+
+      <!-- Result -->
+      <section id="resultState" class="hidden">
+
+        <div class="website">
+          <div class="website-label">CURRENT WEBSITE</div>
+          <div id="domain" class="domain">example.com</div>
+        </div>
+
+        <div class="score-card">
+
+          <div id="scoreRing" class="score-ring">
+
+            <div class="score-content">
+              <div id="score" class="score">--</div>
+              <div class="score-label">TRUST SCORE</div>
+            </div>
+
+          </div>
+
+          <div id="gradeBadge" class="grade-badge">
+            GRADE --
+          </div>
+
+          <div id="dpdpBadge" class="dpdp-badge">
+            DPDP STATUS
+          </div>
+
+        </div>
+
+        <section class="signals">
+
+          <div class="section-title">
+            SIGNAL BREAKDOWN
+          </div>
+
+          <div class="signal">
+            <div class="signal-header">
+              <span>Privacy Policy</span>
+              <strong id="policyScore">--/20</strong>
+            </div>
+
+            <div class="progress">
+              <div id="policyBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="signal">
+            <div class="signal-header">
+              <span>Breach History</span>
+              <strong id="breachScore">--/30</strong>
+            </div>
+
+            <div class="progress">
+              <div id="breachBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="signal">
+            <div class="signal-header">
+              <span>Compliance</span>
+              <strong id="complianceScore">--/20</strong>
+            </div>
+
+            <div class="progress">
+              <div id="complianceBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="signal">
+            <div class="signal-header">
+              <span>User Complaints</span>
+              <strong id="complaintScore">--/15</strong>
+            </div>
+
+            <div class="progress">
+              <div id="complaintBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="signal">
+            <div class="signal-header">
+              <span>Third-Party Trackers</span>
+              <strong id="trackerScore">--/15</strong>
+            </div>
+
+            <div class="progress">
+              <div id="trackerBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="insight">
+
+          <div class="insight-title">
+            ANALYSIS
+          </div>
+
+          <p id="description">
+            --
+          </p>
+
+        </section>
+
+        <section id="actionsSection" class="actions">
+
+          <div class="section-title">
+            WHAT YOU SHOULD DO
+          </div>
+
+          <ul id="actionsList"></ul>
+
+        </section>
+
+        <button id="fullReportBtn" class="primary-button">
+          View Full Report →
+        </button>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <span>Powered by TrustLens</span>
+      <span id="analyzedAt"></span>
+    </footer>
+
+  </div>
+
+  <script src="popup.js"></script>
+
+</body>
+</html>
