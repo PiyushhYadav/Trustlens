@@ -276,9 +276,15 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             </div>
 
             {/* X-Axis Labels */}
-            <div className="absolute bottom-0 left-8 right-4 flex justify-between text-[11px] font-medium text-slate-400">
+            <div className="absolute bottom-0 left-8 right-4 h-5">
               {monthLabels.map((m, i) => (
-                <span key={i} className="flex-1 text-center -ml-2">{m}</span>
+                <span 
+                  key={i} 
+                  className="absolute text-[11px] font-medium text-slate-400 transform -translate-x-1/2 whitespace-nowrap"
+                  style={{ left: `${(i / 11) * 100}%` }}
+                >
+                  {m}
+                </span>
               ))}
             </div>
           </div>
