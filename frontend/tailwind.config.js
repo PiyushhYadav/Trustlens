@@ -63,11 +63,11 @@ export default {
         "full": "9999px"
       },
       fontFamily: {
-        "headline": ['"Cormorant Garamond"', "serif"],
-        "sans": ['"Inter"', "sans-serif"],
-        "label": ['"Inter"', "sans-serif"],
-        "body": ['"Inter"', "sans-serif"],
-        "serif": ['"Cormorant Garamond"', "serif"]
+        "headline": ['"Styrene B"', '"Outfit"', "sans-serif"],
+        "sans": ['"Styrene B"', '"Outfit"', "sans-serif"],
+        "label": ['"Styrene B"', '"Outfit"', "sans-serif"],
+        "body": ['"Tiempos Text"', '"Source Serif 4"', "Georgia", "serif"],
+        "serif": ['"Tiempos Text"', '"Source Serif 4"', "Georgia", "serif"]
       }
     },
   },
