@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.cache_manager import init_db, get_cached_score, set_cached_score, clear_expired
 from backend.demo_data import DEMO_PLATFORMS
 from backend.gemini_client import GeminiClient
-from backend.platform_resolver import resolve_platform, get_known_platforms
+from backend.platform_resolver import resolve_platform, PLATFORM_REGISTRY, get_known_platforms
 from backend.scoring_engine import calculate_score
 from backend.scrapers.tracker_scanner import scan_trackers
 from backend.scrapers.review_scraper import scrape_reviews
@@ -77,6 +77,35 @@ async def get_report(platform: str):
     )
 
 
+@app.get("/score-by-domain")
+async def get_score_by_domain(domain: str):
+    normalized_domain = domain.strip().lower()
+
+    if normalized_domain.startswith("www."):
+        normalized_domain = normalized_domain[4:]
+
+    if not normalized_domain:
+        raise HTTPException(
+            status_code=422,
+            detail="Domain cannot be empty."
+        )
+
+    matched_platform = None
+
+    for platform_name, info in PLATFORM_REGISTRY.items():
+        registry_domain = info.get("domain", "").strip().lower()
+
+        if registry_domain == normalized_domain:
+            matched_platform = platform_name
+            break
+
+    if matched_platform is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No TrustLens platform mapping found for '{normalized_domain}'."
+        )
+
+    return await get_score(matched_platform)
 @app.get("/score")
 async def get_score(platform: str):
     """
