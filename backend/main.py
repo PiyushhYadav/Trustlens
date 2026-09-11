@@ -95,7 +95,7 @@ async def get_score_by_domain(domain: str):
     for platform_name, info in PLATFORM_REGISTRY.items():
         registry_domain = info.get("domain", "").strip().lower()
 
-        if registry_domain == normalized_domain:
+        if registry_domain == normalized_domain or normalized_domain.endswith("." + registry_domain):
             matched_platform = platform_name
             break
 

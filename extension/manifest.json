@@ -7,10 +7,22 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://trustlens-qtex.onrender.com/*"
+    "https://trustlens-qtex.onrender.com/*",
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
   ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "action": {
     "default_title": "TrustLens",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   }
 }

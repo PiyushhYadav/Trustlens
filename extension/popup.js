@@ -39,7 +39,7 @@ function getDomain(url) {
 async function getCurrentTab() {
     const tabs = await chrome.tabs.query({
         active: true,
-        lastFocusedWindow: true
+        currentWindow: true
     });
 
     return tabs[0];
@@ -120,8 +120,18 @@ function renderResult(data, domain) {
 
     document.getElementById("score").textContent = data.score;
 
-    document.getElementById("gradeBadge").textContent =
-        `GRADE ${data.grade}`;
+    const gradeBadge = document.getElementById("gradeBadge");
+    gradeBadge.textContent = `GRADE ${data.grade}`;
+    
+    const scoreRing = document.querySelector(".score-ring");
+    
+    // Clear old grade classes
+    scoreRing.className = "score-ring";
+    gradeBadge.className = "grade-badge";
+    
+    const gradeClass = `grade-${data.grade.toLowerCase()}`;
+    scoreRing.classList.add(gradeClass);
+    gradeBadge.classList.add(gradeClass);
 
     const dpdpBadge = document.getElementById("dpdpBadge");
 
