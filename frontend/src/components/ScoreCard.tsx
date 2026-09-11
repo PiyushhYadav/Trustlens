@@ -56,23 +56,19 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
   const circumference = 276.46;
   const offset = circumference - (data.score / 100) * circumference;
 
-  // Trend line math (dynamically scaled for visual drama)
-  const safeTrend = Array.isArray(data.trend) && data.trend.length > 0 ? data.trend : [data.score, data.score, data.score];
-  const trendMax = Math.max(...safeTrend);
-  const trendMin = Math.min(...safeTrend);
-  // Add 10% padding to the range so the line doesn't hit the absolute top/bottom edges
-  const padding = (trendMax - trendMin) * 0.1 || 1; 
-  const displayMax = trendMax + padding;
-  const displayMin = trendMin - padding;
-  const range = displayMax - displayMin;
+  // Trend line math (Absolute 0-100 scale)
+  let trendData = Array.isArray(data.trend) && data.trend.length > 0 ? data.trend : [data.score];
+  if (trendData.length < 12) {
+      trendData = [...Array(12 - trendData.length).fill(trendData[0]), ...trendData];
+  } else if (trendData.length > 12) {
+      trendData = trendData.slice(-12);
+  }
+  const safeTrend = trendData;
   
-  // map trend values to SVG coordinates (0 to 100 on X, Y from 35 down to 5)
-  const stepX = 100 / (safeTrend.length - 1);
+  // map trend values to SVG coordinates (0 to 100 on X, Y from 100 down to 0)
+  const stepX = 100 / 11;
   const pointCoords = safeTrend.map((val, idx) => {
-    const x = idx * stepX;
-    const normalized = (val - displayMin) / range;
-    const y = 35 - (normalized * 30);
-    return { x, y };
+    return { x: idx * stepX, y: 100 - val };
   });
 
   // Generate smoothed path (Cubic Bezier)
@@ -86,8 +82,23 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
        smoothPath += ` C ${cpX},${p0.y} ${cpX},${p1.y} ${p1.x},${p1.y}`;
     }
   }
-  
-  const fillPath = `${smoothPath} L 100,40 L 0,40 Z`;
+  const fillPath = `${smoothPath} L 100,100 L 0,100 Z`;
+
+  // Trend footer math
+  const currentScore = safeTrend[11];
+  const oldScore = safeTrend[0];
+  const diff = currentScore - oldScore;
+  const isPositive = diff >= 0;
+  const diffText = `${isPositive ? '+' : ''}${diff}%`;
+
+  // X-Axis Month Labels
+  const monthsArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthLabels = [];
+  let mIdx = new Date().getMonth();
+  for (let i = 0; i < 12; i++) {
+    monthLabels.unshift(monthsArr[mIdx]);
+    mIdx = (mIdx - 1 + 12) % 12;
+  }
 
   return (
     <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8">
@@ -206,55 +217,89 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
       <aside className="lg:col-span-4 space-y-12">
         
         {/* Trend Graph Card */}
-        <div className="bg-surface-container-lowest p-10 rounded-2xl shadow-[0px_12px_32px_rgba(25,28,29,0.04)] border border-stone-100">
-          <div className="flex justify-between items-center mb-8">
-            <h4 className="font-label text-xs font-bold uppercase tracking-widest text-on-surface-variant">12-Month Trend</h4>
-            <span className="material-symbols-outlined text-primary">analytics</span>
+        <div className="bg-white p-6 rounded-3xl shadow-[0px_4px_24px_rgba(0,0,0,0.04)] border border-stone-100 flex flex-col relative z-10">
+          <div className="flex justify-between items-center mb-6">
+            <h4 className="font-bold text-[13px] uppercase tracking-wider text-slate-800">12-Month Trend</h4>
+            <span className="material-symbols-outlined text-slate-400">stacked_bar_chart</span>
           </div>
-          <div className="h-40 w-full flex items-end justify-between gap-1 relative">
-            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#005dac" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#005dac" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
 
-              {/* Gridlines */}
-              <line x1="0" y1="10" x2="100" y2="10" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
-              <line x1="0" y1="20" x2="100" y2="20" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
-              <line x1="0" y1="30" x2="100" y2="30" stroke="#f3f4f6" strokeWidth="0.5" strokeDasharray="1,1" />
-
-              {/* Gradient Fill under the line */}
-              <path 
-                d={fillPath} 
-                fill="url(#trendGradient)" 
-              />
+          <div className="relative w-full h-[220px]">
+            {/* Y-Axis Labels */}
+            <div className="absolute top-0 left-0 bottom-6 w-6 flex flex-col justify-between py-[2px] text-[10px] font-bold text-slate-400">
+              <span>100</span>
+              <span>75</span>
+              <span>50</span>
+              <span>25</span>
+              <span>0</span>
+            </div>
+            
+            {/* Chart Area */}
+            <div className="absolute top-0 left-8 right-4 bottom-6 relative">
+              {/* Horizontal Gridlines */}
+              <div className="absolute inset-0 flex flex-col justify-between py-1">
+                {[...Array(5)].map((_, i) => (
+                  <div key={`h-${i}`} className="w-full h-px bg-slate-100" />
+                ))}
+              </div>
               
-              {/* Smoothed Trend Line */}
-              <path 
-                d={smoothPath} 
-                fill="none" 
-                stroke="#005dac" 
-                strokeWidth="2.5" 
-                strokeLinejoin="round" 
-                strokeLinecap="round"
-              />
+              {/* Vertical Gridlines */}
+              <div className="absolute inset-0 flex justify-between">
+                {[...Array(12)].map((_, i) => (
+                  <div key={`v-${i}`} className="h-full w-px bg-slate-100" />
+                ))}
+              </div>
 
-              {/* Monthly Dots */}
-              {pointCoords.map((pt, i) => (
-                <circle key={i} cx={pt.x} cy={pt.y} r="1.25" fill="#005dac" className="transition-all hover:r-2" />
+              {/* SVG Line Chart */}
+              <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#005dac" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="#005dac" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path d={fillPath} fill="url(#trendGradient)" />
+                <path d={smoothPath} fill="none" stroke="#005dac" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+              </svg>
+
+              {/* Final Data Point Dot & Badge */}
+              <div 
+                className="absolute w-3 h-3 bg-[#005dac] rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_0_4px_rgba(0,93,172,0.2)]"
+                style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
+              ></div>
+              <div 
+                className="absolute z-20 flex flex-col items-center bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-xl px-4 py-2 transform -translate-x-1/2 -translate-y-[calc(100%+12px)]"
+                style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
+              >
+                <span className="text-xl font-bold text-slate-800 leading-none">{safeTrend[11]}</span>
+                <span className="text-[10px] font-medium text-slate-400 mt-1 whitespace-nowrap">{monthLabels[11]} {new Date().getFullYear()}</span>
+              </div>
+            </div>
+
+            {/* X-Axis Labels */}
+            <div className="absolute bottom-0 left-8 right-4 flex justify-between text-[11px] font-medium text-slate-400">
+              {monthLabels.map((m, i) => (
+                <span key={i} className="flex-1 text-center -ml-2">{m}</span>
               ))}
-            </svg>
+            </div>
           </div>
-          <div className="mt-6 flex justify-between text-[10px] font-bold font-label uppercase tracking-widest text-on-surface-variant/60">
-            <span>12 Months Ago</span>
-            <span>Present</span>
-          </div>
-          <div className="mt-8 pt-8 border-t border-outline-variant/15">
-            <p className="text-sm font-sans leading-relaxed text-on-surface-variant">
-              Latest score is <span className="text-primary font-bold">{safeTrend[safeTrend.length - 1]}</span> out of 100.
-            </p>
+
+          {/* Footer Banner */}
+          <div className="mt-8 bg-slate-50/80 rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                <span className="material-symbols-outlined font-bold transform -rotate-45">
+                  {isPositive ? 'arrow_upward' : 'arrow_downward'}
+                </span>
+              </div>
+              <div>
+                <div className="font-bold text-slate-800 text-sm">{diffText}</div>
+                <div className="text-[11px] text-slate-500 font-medium">vs. 12 months ago</div>
+              </div>
+            </div>
+            <div className="w-px h-10 bg-slate-200 mx-4"></div>
+            <div className="flex-1 text-[13px] font-medium text-slate-600">
+              Latest score is out of 100.
+            </div>
           </div>
         </div>
 
