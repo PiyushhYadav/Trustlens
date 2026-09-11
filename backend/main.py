@@ -248,9 +248,17 @@ def list_platforms():
 
     return {
         "platforms": sorted(platforms, key=lambda p: p["name"]),
-        "count": len(platforms),
+        "total": len(platforms),
         "note": "You can also search for any platform not in this list — TrustLens will analyze it live.",
     }
+
+
+@app.post("/clear-cache")
+def clear_api_cache():
+    """Admin endpoint to clear the SQLite cache."""
+    from backend.cache_manager import clear_all
+    clear_all()
+    return {"status": "success", "message": "Cache cleared."}
 
 
 # ─── Fallback helpers ───────────────────────────────────────────────
