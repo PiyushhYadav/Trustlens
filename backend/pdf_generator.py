@@ -39,13 +39,39 @@ def generate_trend_chart(trend_data):
         trend_data = trend_data[-12:]
         
     plt.figure(figsize=(7, 2), dpi=150)
-    plt.plot(range(1, 13), trend_data, marker='o', markersize=5, color='#005dac', linewidth=2)
-    plt.fill_between(range(1, 13), trend_data, alpha=0.1, color='#005dac')
+    
+    # Generate dynamic month labels based on current date
+    from datetime import datetime
+    import calendar
+    now = datetime.now()
+    month_labels = []
+    for i in range(11, -1, -1):
+        m = (now.month - 1 - i) % 12 + 1
+        month_labels.append(calendar.month_abbr[m])
+        
+    # Smooth line using scipy if available, else standard plot
+    try:
+        from scipy.interpolate import make_interp_spline
+        import numpy as np
+        x = np.array(range(1, 13))
+        y = np.array(trend_data)
+        X_Y_Spline = make_interp_spline(x, y)
+        X_ = np.linspace(x.min(), x.max(), 500)
+        Y_ = X_Y_Spline(X_)
+        plt.plot(X_, Y_, color='#005dac', linewidth=2)
+        plt.fill_between(X_, Y_, alpha=0.1, color='#005dac')
+        plt.plot(12, trend_data[-1], marker='o', markersize=6, color='#005dac') # Final dot
+    except ImportError:
+        plt.plot(range(1, 13), trend_data, color='#005dac', linewidth=2)
+        plt.fill_between(range(1, 13), trend_data, alpha=0.1, color='#005dac')
+        plt.plot(12, trend_data[-1], marker='o', markersize=6, color='#005dac') # Final dot
+
     plt.ylim(0, 100)
     plt.xlim(1, 12)
-    plt.xticks(range(1, 13), ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"], color='#6b7280', fontsize=8)
-    plt.yticks([0, 20, 40, 60, 80, 100], color='#6b7280', fontsize=8)
-    plt.grid(axis='y', linestyle='--', alpha=0.3)
+    plt.xticks(range(1, 13), month_labels, color='#6b7280', fontsize=8)
+    plt.yticks([0, 25, 50, 75, 100], color='#6b7280', fontsize=8)
+    plt.grid(axis='y', linestyle='-', alpha=0.2, color='#6b7280')
+    plt.grid(axis='x', linestyle='-', alpha=0.1, color='#6b7280')
     plt.grid(axis='x', linestyle='--', alpha=0.1)
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
