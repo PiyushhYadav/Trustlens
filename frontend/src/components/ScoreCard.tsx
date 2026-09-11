@@ -234,7 +234,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             </div>
             
             {/* Chart Area */}
-            <div className="absolute top-0 left-8 right-4 bottom-6 relative">
+            <div className="absolute top-0 left-8 right-4 bottom-6">
               {/* Horizontal Gridlines */}
               <div className="absolute inset-0 flex flex-col justify-between py-1">
                 {[...Array(5)].map((_, i) => (
@@ -304,7 +304,7 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             </div>
             <div className="w-px h-10 bg-slate-200 mx-4"></div>
             <div className="flex-1 text-[13px] font-medium text-slate-600">
-              Latest score is out of 100.
+              Latest score is <strong className="text-slate-800">{safeTrend[11]}</strong> out of 100.
             </div>
           </div>
         </div>
