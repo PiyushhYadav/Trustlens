@@ -8,7 +8,7 @@ import { MethodologyView } from './components/MethodologyView';
 import { ExtensionMockupView } from './components/ExtensionMockupView';
 import './index.css';
 
-const GOOGLE_CLIENT_ID = "37192821068-pjpcg5749gtli4o7o4onrnicv1t9fif0.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "11727542694-i30l5qdvm55qft3ogeqfmbbumgqtthbu.apps.googleusercontent.com";
 
 const AppContent = () => {
   const location = useLocation();
