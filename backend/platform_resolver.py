@@ -17,7 +17,7 @@ PLATFORM_REGISTRY: dict[str, dict] = {
         "android_package": "com.application.zomato",
         "domain": "zomato.com",
         "policy_url": "https://www.zomato.com/privacy",
-        "category": "Food Delivery",
+        "category": "Food & Beverage",
         "description": "Zomato is an Indian multinational restaurant aggregator and food delivery company."
     },
     "swiggy": {
