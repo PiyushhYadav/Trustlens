@@ -515,3 +515,4 @@ footer {
 .grade-badge.grade-c, .grade-badge.grade-d { background: #fef3c7; color: #b45309; }
 .grade-badge.grade-f { background: #fee2e2; color: #b91c1c; }
 
+.logo-img { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
