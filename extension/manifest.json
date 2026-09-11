@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "TrustLens",
+  "version": "1.0.0",
+  "description": "See the TrustLens privacy score for the website you are currently browsing.",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://trustlens-qtex.onrender.com/*"
+  ],
+  "action": {
+    "default_title": "TrustLens",
+    "default_popup": "popup.html"
+  }
+}
