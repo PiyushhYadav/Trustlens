@@ -54,7 +54,7 @@ async function fetchScore(domain) {
 
     try {
         const url =
-            `${API_BASE}/score-by-domain?domain=${encodeURIComponent(domain)}`;
+    `${API_BASE}/score-by-domain?domain=${encodeURIComponent(domain)}`;
 
         const response = await fetch(url, {
             signal: controller.signal
@@ -95,7 +95,7 @@ function renderSignal(id, signal) {
 }
 
 function renderActions(actions) {
-    const container = document.getElementById("actionSteps");
+    const container = document.getElementById("actionsList");
 
     if (!container) {
         return;
@@ -116,12 +116,12 @@ function renderActions(actions) {
 }
 
 function renderResult(data, domain) {
-    document.getElementById("currentDomain").textContent = domain;
+    document.getElementById("domain").textContent = domain;
 
-    document.getElementById("scoreValue").textContent = data.score;
-    document.getElementById("gradeValue").textContent = data.grade;
-    document.getElementById("gradeDescription").textContent =
-        data.grade_desc || "";
+    document.getElementById("score").textContent = data.score;
+
+    document.getElementById("gradeBadge").textContent =
+        `GRADE ${data.grade}`;
 
     const dpdpBadge = document.getElementById("dpdpBadge");
 
@@ -146,6 +146,11 @@ function renderResult(data, domain) {
 
     renderActions(data.action_steps);
 
+    if (data.analyzed_at) {
+        document.getElementById("analyzedAt").textContent =
+            `Analyzed ${new Date(data.analyzed_at).toLocaleDateString()}`;
+    }
+
     currentPlatform =
         data.platform_info?.display_name || domain;
 
@@ -169,7 +174,7 @@ async function loadTrustLens() {
             return;
         }
 
-        document.getElementById("currentDomain").textContent = domain;
+        document.getElementById("domain").textContent = domain;
 
         const data = await fetchScore(domain);
 
@@ -185,13 +190,15 @@ async function loadTrustLens() {
 
         const errorMessage = document.getElementById("errorMessage");
 
-        if (error.name === "AbortError") {
-            errorMessage.textContent =
-                "Analysis is taking too long. Please try again.";
-        } else {
-            errorMessage.textContent =
-                "Could not connect to the TrustLens backend.";
-        }
+        if (errorMessage) {
+             if (error.name === "AbortError") {
+        errorMessage.textContent =
+            "Analysis is taking too long. Please try again.";
+             } else {
+        errorMessage.textContent =
+            "Could not connect to the TrustLens backend.";
+    }
+}
 
         showState(errorState);
     }
