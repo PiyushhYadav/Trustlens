@@ -188,7 +188,7 @@ export const CompareView: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
         <div>
           <h1 className="text-4xl md:text-5xl font-headline font-bold text-on-surface mb-4">Platform Comparison</h1>
-          <p className="text-lg text-on-surface-variant font-body">Benchmarking veracity signals head-to-head.</p>
+          <p className="text-lg text-on-surface-variant font-body">Two platforms. Five signals. One clear answer.</p>
         </div>
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
           <SearchableSelect 
