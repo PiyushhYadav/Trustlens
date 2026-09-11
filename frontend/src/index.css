@@ -4,7 +4,7 @@
 
 @layer base {
   body { 
-    font-family: 'Tiempos Text', 'Source Serif 4', Georgia, serif; 
+    font-family: 'Inter', sans-serif; 
     background-color: theme('colors.background'); 
   }
 }
