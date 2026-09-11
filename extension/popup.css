@@ -506,3 +506,12 @@ footer {
   font-size: 9px;
   color: #899198;
 }
+/* Dynamic Grade Colors */
+.score-ring.grade-a, .score-ring.grade-b { border-color: #10b981; }
+.score-ring.grade-c, .score-ring.grade-d { border-color: #f59e0b; }
+.score-ring.grade-f { border-color: #ef4444; }
+
+.grade-badge.grade-a, .grade-badge.grade-b { background: #d1fae5; color: #047857; }
+.grade-badge.grade-c, .grade-badge.grade-d { background: #fef3c7; color: #b45309; }
+.grade-badge.grade-f { background: #fee2e2; color: #b91c1c; }
+
