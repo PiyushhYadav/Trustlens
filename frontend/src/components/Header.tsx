@@ -84,24 +84,39 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
         <div className="flex items-center gap-3 md:gap-4">
           {reportReady && (
-            <button 
-              onClick={() => {
-                const match = location.pathname.match(/^\/score\/(.+)$/);
-                const platform = match ? match[1] : null;
-                if (platform) {
-                  const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
-                  window.open(`${apiBase}/report/${platform}`, '_blank');
-                } else {
-                  window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
-                }
-              }}
-              className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
-              </svg>
-              Download Report
-            </button>
+            user ? (
+              <button 
+                onClick={() => {
+                  const match = location.pathname.match(/^\/score\/(.+)$/);
+                  const match2 = location.pathname.match(/^\/compare$/);
+                  const platform = match ? match[1] : null;
+                  if (platform) {
+                    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+                    window.open(`${apiBase}/report/${platform}`, '_blank');
+                  } else if(match2) {
+                    window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
+                  } else {
+                    window.print();
+                  }
+                }}
+                className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
+                </svg>
+                Download Report
+              </button>
+            ) : (
+              <button 
+                onClick={() => login()}
+                className="hidden md:flex items-center gap-2 bg-white text-primary border-2 border-primary/20 px-5 py-2.5 rounded-xl font-bold hover:bg-stone-50 hover:border-primary/40 transition-all active:scale-95 shadow-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Sign in to Download
+              </button>
+            )
           )}
           <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
             Get Extension
