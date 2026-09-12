@@ -121,6 +121,26 @@ def calculate_score(
     if not action_steps:
         action_steps = _generate_default_actions(sub_scores, grade)
 
+    # Determine Safer Alternative if score is poor (C, D, F)
+    alternative = None
+    if total_score < 70 and platform_info:
+        category = platform_info.get("category", "").lower()
+        platform_name = platform_info.get("display_name", "").lower()
+        
+        SAFE_ALTERNATIVES = {
+            "dating": {"platform": "Bumble", "score": 78, "grade": "B", "reason": "Better data minimization and no recent major breaches."},
+            "food": {"platform": "Swiggy", "score": 82, "grade": "B", "reason": "Stronger DPDP compliance and consent management."},
+            "social": {"platform": "Signal", "score": 95, "grade": "A", "reason": "End-to-end encrypted, zero data selling."},
+            "finance": {"platform": "Cred", "score": 88, "grade": "B", "reason": "Transparent data policies and strict third-party sharing limits."},
+            "shopping": {"platform": "Tata Neu", "score": 85, "grade": "B", "reason": "Strong native Indian data localization."},
+            "network": {"platform": "Signal", "score": 95, "grade": "A", "reason": "End-to-end encrypted, zero data selling."},
+        }
+        
+        for key, alt in SAFE_ALTERNATIVES.items():
+            if key in category and alt["platform"].lower() != platform_name:
+                alternative = alt
+                break
+
     return {
         "score": total_score,
         "grade": grade,
@@ -129,6 +149,7 @@ def calculate_score(
         "signals": sub_scores,
         "action_steps": action_steps,
         "trend": safe_trend,
+        "alternative": alternative,
         "description": description,
         "sources": sources,
         "analyzed_at": datetime.now(timezone.utc).isoformat(),
