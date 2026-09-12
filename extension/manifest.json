@@ -24,5 +24,16 @@
       "48": "icon48.png",
       "128": "icon128.png"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://trusttlens.netlify.app/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
 }
