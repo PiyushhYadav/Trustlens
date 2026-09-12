@@ -19,6 +19,12 @@ export interface ScoreData {
   action_steps: string[];
   trend: number[];
   description?: string;
+  alternative?: {
+    platform: string;
+    score: number;
+    grade: string;
+    reason: string;
+  };
   platform_info?: {
     display_name: string;
     category: string;
@@ -180,11 +186,40 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 <h1 className="text-4xl md:text-6xl font-headline text-on-surface leading-[1.15] font-bold capitalize">
                   {platform}
                 </h1>
+                <a 
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I just audited ${platform} using @TrustLens. They scored a ${data.grade} (${data.score}/100) on privacy and security. Check your apps here: https://trusttlens.netlify.app/score/${platform.toLowerCase()}`)}`}
+                  target="_blank" rel="noreferrer"
+                  className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Share
+                </a>
               </div>
             </div>
             <p className="text-xl text-on-surface-variant leading-relaxed font-body">
               {data.description || "An automated trust and privacy audit based on five independent veracity signals."}
             </p>
+
+            {/* Safer Alternative Banner */}
+            {data.alternative && (
+              <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-start gap-4 shadow-sm">
+                <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="material-symbols-outlined text-emerald-600">verified_user</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-emerald-900 flex items-center gap-2">
+                    Safer Alternative: {data.alternative.platform} 
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-200 font-bold tracking-wide">
+                      Score: {data.alternative.score} (Grade {data.alternative.grade})
+                    </span>
+                  </h4>
+                  <p className="text-emerald-800 text-[15px] mt-1 leading-relaxed">
+                    {data.alternative.reason}
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-wrap items-center gap-8 pt-2">
               <div className="flex items-center gap-2.5 text-[15px] font-semibold text-slate-600">
                 <span className="material-symbols-outlined text-xl">location_on</span>
