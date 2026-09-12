@@ -15,6 +15,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [extensionInstalled, setExtensionInstalled] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -24,7 +25,28 @@ export const Header: React.FC<HeaderProps> = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    // Extension detection
+    if (document.getElementById('trustlens-extension-installed')) {
+      setExtensionInstalled(true);
+    }
+    
+    const handleInstalled = () => setExtensionInstalled(true);
+    window.addEventListener('trustlens-installed', handleInstalled);
+    
+    const observer = new MutationObserver(() => {
+      if (document.getElementById('trustlens-extension-installed')) {
+        setExtensionInstalled(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('trustlens-installed', handleInstalled);
+      observer.disconnect();
+    };
   }, []);
   
   const login = useGoogleLogin({
@@ -118,9 +140,16 @@ export const Header: React.FC<HeaderProps> = () => {
               </button>
             )
           )}
-          <Link to="/extension-mockup" target="_blank" rel="noopener noreferrer" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
-            Get Extension
-          </Link>
+          {extensionInstalled ? (
+            <div className="hidden md:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-2.5 rounded-xl font-medium border border-emerald-200 cursor-default">
+              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              Extension Installed
+            </div>
+          ) : (
+            <Link to="/install-extension" className="hidden md:inline-block bg-primary text-on-primary px-6 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95">
+              Get Extension
+            </Link>
+          )}
           <div className="relative hidden md:block" ref={profileRef}>
             <button 
               onClick={() => setProfileOpen(!profileOpen)}
@@ -187,7 +216,14 @@ export const Header: React.FC<HeaderProps> = () => {
           <Link onClick={() => setMenuOpen(false)} className={`block ${isCompare ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/compare">Comparison</Link>
           <Link onClick={() => setMenuOpen(false)} className={`block ${isMethodology ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/methodology">Methodology</Link>
           <hr className="border-stone-100" />
-          <Link onClick={() => setMenuOpen(false)} to="/extension-mockup" className="block text-primary font-medium">Download Extension</Link>
+          {extensionInstalled ? (
+            <div className="flex items-center gap-2 text-emerald-700 font-medium">
+              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              Extension Installed
+            </div>
+          ) : (
+            <Link onClick={() => setMenuOpen(false)} to="/install-extension" className="block text-primary font-medium">Download Extension</Link>
+          )}
           {user ? (
             <button 
               onClick={() => { setMenuOpen(false); handleLogout(); }} 
