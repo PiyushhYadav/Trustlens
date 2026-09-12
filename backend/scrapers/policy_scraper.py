@@ -53,7 +53,7 @@ async def scrape_privacy_policy(
 
     try:
         async with httpx.AsyncClient(
-            timeout=15,
+            timeout=25,
             follow_redirects=True,
         ) as client:
             resp = await client.get(
