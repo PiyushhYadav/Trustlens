@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 export interface HeaderProps {}
@@ -12,6 +12,7 @@ interface UserProfile {
 
 export const Header: React.FC<HeaderProps> = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -20,6 +21,29 @@ export const Header: React.FC<HeaderProps> = () => {
   const [copied, setCopied] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/score/${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      searchInputRef.current?.blur();
+    }
+  };
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -110,6 +134,28 @@ export const Header: React.FC<HeaderProps> = () => {
             <Link className={`${isMethodology ? 'text-primary font-bold border-b-2 border-primary' : 'text-zinc-600 font-medium hover:text-zinc-900'} transition-colors pb-1`} to="/methodology">Methodology</Link>
           </div>
         </div>
+
+        {/* Search Bar */}
+        <div className="hidden lg:flex flex-1 max-w-lg mx-6">
+          <form onSubmit={handleSearch} className="w-full relative group">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
+              <span className="material-symbols-outlined text-xl">search</span>
+            </div>
+            <input 
+              ref={searchInputRef}
+              type="text" 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search any company, app or website..." 
+              className="w-full pl-10 pr-16 py-2.5 bg-stone-50/80 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium placeholder:text-stone-400 text-stone-700"
+            />
+            <div className="absolute inset-y-0 right-3 flex items-center gap-1 pointer-events-none">
+              <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-bold text-stone-500 font-sans shadow-sm">Ctrl</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-bold text-stone-500 font-sans shadow-sm">K</kbd>
+            </div>
+          </form>
+        </div>
+
         <div className="flex items-center gap-3 md:gap-4">
           {reportReady && (
             <div className="relative hidden md:block" ref={shareRef}>
