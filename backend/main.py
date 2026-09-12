@@ -154,44 +154,62 @@ async def get_score(platform: str):
     policy_url = platform_info.get("policy_url")
     display_name = platform_info.get("display_name", platform.title())
 
-    # 4. Run all scrapers in parallel
+    # 4. Define concurrent pipelines for Scraper + AI combinations
+    async def pipeline_policy():
+        p_url = policy_url
+        if not p_url and android_pkg:
+            try:
+                p_url = await discover_policy_url_from_playstore(android_pkg)
+            except Exception:
+                p_url = None
+        
+        try:
+            policy_text = await scrape_privacy_policy(normalized, p_url) if p_url else None
+        except Exception:
+            policy_text = None
+            
+        if policy_text and isinstance(policy_text, str):
+            return await gemini.analyze_policy(policy_text)
+        return gemini._fallback_policy_score()
+
+    async def pipeline_reviews():
+        try:
+            r_data = await scrape_reviews(android_pkg) if android_pkg else {"reviews": []}
+        except Exception as e:
+            r_data = e
+        
+        r_list = r_data.get("reviews", []) if isinstance(r_data, dict) else []
+        analysis = await gemini.analyze_complaints(r_list, display_name)
+        return r_data, analysis
+
+    # 5. Execute all pipelines in parallel
     tracker_task = scan_trackers(android_pkg) if android_pkg else _empty_tracker()
-    review_task = scrape_reviews(android_pkg) if android_pkg else _empty_reviews()
     breach_task = scan_breaches(domain) if domain else _empty_breach()
     security_task = scan_security_headers(domain) if domain else _empty_security()
 
-    # Discover policy URL from Play Store if not known
-    if not policy_url and android_pkg:
-        policy_url = await discover_policy_url_from_playstore(android_pkg)
-
-    policy_task = scrape_privacy_policy(normalized, policy_url) if policy_url else _no_policy()
-
-    # Gather all results — don't let one failure kill the pipeline
     results = await asyncio.gather(
         tracker_task,
-        review_task,
         breach_task,
         security_task,
-        policy_task,
+        pipeline_policy(),
+        pipeline_reviews(),
         return_exceptions=True,
     )
 
     tracker_data = results[0] if not isinstance(results[0], Exception) else _fallback("tracker", results[0])
-    review_data = results[1] if not isinstance(results[1], Exception) else _fallback("review", results[1])
-    breach_data = results[2] if not isinstance(results[2], Exception) else _fallback("breach", results[2])
-    security_data = results[3] if not isinstance(results[3], Exception) else _fallback("security", results[3])
-    policy_text = results[4] if not isinstance(results[4], Exception) else None
-
-    # 5. AI analysis of scraped data
-    # Policy analysis via Gemini
-    if policy_text and isinstance(policy_text, str):
-        policy_analysis = await gemini.analyze_policy(policy_text)
+    breach_data = results[1] if not isinstance(results[1], Exception) else _fallback("breach", results[1])
+    security_data = results[2] if not isinstance(results[2], Exception) else _fallback("security", results[2])
+    
+    policy_analysis = results[3] if not isinstance(results[3], Exception) else gemini._fallback_policy_score()
+    
+    if not isinstance(results[4], Exception):
+        review_data, complaint_analysis = results[4]
     else:
-        policy_analysis = gemini._fallback_policy_score()
+        review_data = _fallback("review", results[4])
+        complaint_analysis = gemini._fallback_complaint_score()
 
-    # Complaint analysis via Gemini (using real reviews)
-    reviews_list = review_data.get("reviews", []) if isinstance(review_data, dict) else []
-    complaint_analysis = await gemini.analyze_complaints(reviews_list, display_name)
+    if isinstance(review_data, Exception):
+        review_data = _fallback("review", review_data)
 
     # Derive DPDP compliance from policy analysis
     dpdp_compliant = policy_analysis.get("dpdp_compliant", False)
