@@ -199,16 +199,16 @@ async def get_score(platform: str):
     is_policy_fallback = policy_analysis.get("source") == "fallback" or not policy_analysis.get("verified", True)
 
     if is_policy_fallback:
-        dpdp_score = 10
-        security_summary = "Analysis unavailable — midpoint score shown, not a verified result."
+        dpdp_score = 12
+        security_summary = "Analysis unavailable - midpoint score shown, not a verified result."
     else:
-        dpdp_score = 16 if dpdp_compliant else max(5, 20 - len(dpdp_issues) * 3)
+        dpdp_score = 25 if dpdp_compliant else max(5, 25 - len(dpdp_issues) * 3)
         security_summary = "DPDP Compliant: 0 issues found" if len(dpdp_issues) == 0 else f"DPDP Non-Compliant: {len(dpdp_issues)} issue(s) found."
 
     # 6. Assemble sub_scores
     sub_scores = {
         "breach": breach_data if isinstance(breach_data, dict) and "score" in breach_data else {
-            "score": 15, "max": 30, "summary": "Breach data unavailable.", "source": "fallback", "verified": False,
+            "score": 15, "max": 25, "summary": "Breach data unavailable.", "source": "fallback", "verified": False,
         },
         "policy": {
             "score": policy_analysis.get("total_score", 10),
@@ -220,7 +220,7 @@ async def get_score(platform: str):
         },
         "compliance": {
             "score": dpdp_score,
-            "max": 20,
+            "max": 25,
             "summary": security_summary,
             "compliant": False if is_policy_fallback else (dpdp_compliant or len(dpdp_issues) == 0),
             "issues": dpdp_issues,
@@ -238,7 +238,10 @@ async def get_score(platform: str):
         signal["is_fallback"] = (signal.get("source") == "fallback" or not signal.get("verified", True))
 
     # Build the result
-    default_desc = f"{display_name} is a {platform_info.get('category', 'digital platform').lower()} operating in the Indian digital ecosystem."
+    category = platform_info.get('category', 'digital platform').lower()
+    if 'app' not in category and 'platform' not in category and 'service' not in category and 'network' not in category:
+        category += ' app'
+    default_desc = f"{display_name} is a {category} operating in the Indian digital ecosystem."
     description_text = platform_info.get("description", default_desc)
 
     result = calculate_score(
