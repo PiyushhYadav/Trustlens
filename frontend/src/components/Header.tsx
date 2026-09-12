@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
   const isCompare = location.pathname.startsWith('/compare');
   const isMethodology = location.pathname.startsWith('/methodology');
-  const isIntelligence = !isCompare && !isMethodology;
+  const isIntelligence = location.pathname === '/' || location.pathname.startsWith('/score');
 
   const [reportReady, setReportReady] = useState(false);
 
@@ -99,9 +99,9 @@ export const Header: React.FC<HeaderProps> = () => {
             TrustLens
           </Link>
           <div className="hidden md:flex space-x-8">
-            <Link className={`${isIntelligence ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/">Intelligence</Link>
-            <Link className={`${isCompare ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/compare">Comparison</Link>
-            <Link className={`${isMethodology ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-zinc-500 hover:text-zinc-900'} transition-colors pb-1`} to="/methodology">Methodology</Link>
+            <Link className={`${isIntelligence ? 'text-primary font-bold border-b-2 border-primary' : 'text-zinc-600 font-medium hover:text-zinc-900'} transition-colors pb-1`} to="/">Intelligence</Link>
+            <Link className={`${isCompare ? 'text-primary font-bold border-b-2 border-primary' : 'text-zinc-600 font-medium hover:text-zinc-900'} transition-colors pb-1`} to="/compare">Comparison</Link>
+            <Link className={`${isMethodology ? 'text-primary font-bold border-b-2 border-primary' : 'text-zinc-600 font-medium hover:text-zinc-900'} transition-colors pb-1`} to="/methodology">Methodology</Link>
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4">
@@ -212,9 +212,9 @@ export const Header: React.FC<HeaderProps> = () => {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-stone-100 px-4 py-4 space-y-4 shadow-lg absolute w-full left-0">
-          <Link onClick={() => setMenuOpen(false)} className={`block ${isIntelligence ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/">Intelligence</Link>
-          <Link onClick={() => setMenuOpen(false)} className={`block ${isCompare ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/compare">Comparison</Link>
-          <Link onClick={() => setMenuOpen(false)} className={`block ${isMethodology ? 'text-blue-700 font-bold' : 'text-zinc-500'}`} to="/methodology">Methodology</Link>
+          <Link onClick={() => setMenuOpen(false)} className={`block ${isIntelligence ? 'text-primary font-bold' : 'text-zinc-600 font-medium'}`} to="/">Intelligence</Link>
+          <Link onClick={() => setMenuOpen(false)} className={`block ${isCompare ? 'text-primary font-bold' : 'text-zinc-600 font-medium'}`} to="/compare">Comparison</Link>
+          <Link onClick={() => setMenuOpen(false)} className={`block ${isMethodology ? 'text-primary font-bold' : 'text-zinc-600 font-medium'}`} to="/methodology">Methodology</Link>
           <hr className="border-stone-100" />
           {extensionInstalled ? (
             <div className="flex items-center gap-2 text-emerald-700 font-medium">
