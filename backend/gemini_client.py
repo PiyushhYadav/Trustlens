@@ -17,13 +17,14 @@ DEFAULT_MODEL = "gemini-3-flash-preview"  # updated default for live demo
 
 
 class GeminiClient:
+    # Use a class-level semaphore to strictly prevent concurrent Gemini API calls,
+    # which immediately trigger 429 Rate Limited errors on the free tier.
+    _semaphore = asyncio.Semaphore(1)
+
     def __init__(self, model: str | None = None):
         self.api_key = os.getenv("GEMINI_API_KEY")
         self.model = model or os.getenv("GEMINI_MODEL", DEFAULT_MODEL)
-        self.base_url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{self.model}:generateContent"
-        )
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
 
     async def analyze(self, prompt: str, max_retries: int = 2) -> dict | None:
         if not self.api_key:
@@ -40,46 +41,47 @@ class GeminiClient:
         }
 
         last_error = None
-        for attempt in range(max_retries + 1):
-            try:
-                async with httpx.AsyncClient(timeout=30) as client:
-                    resp = await client.post(url, json=payload)
+        async with self._semaphore:
+            for attempt in range(max_retries + 1):
+                try:
+                    async with httpx.AsyncClient(timeout=30) as client:
+                        resp = await client.post(url, json=payload)
 
-                if resp.status_code == 429:
-                    last_error = "429 rate limited"
-                    if attempt < max_retries:
-                        await asyncio.sleep(1.5 * (attempt + 1))
+                    if resp.status_code == 429:
+                        last_error = "429 rate limited"
+                        if attempt < max_retries:
+                            await asyncio.sleep(2.0 * (attempt + 1))
+                        continue
+
+                    if resp.status_code == 404:
+                        raise RuntimeError(
+                            f"Gemini model '{self.model}' returned 404 - it may "
+                            f"have been deprecated. Check "
+                            f"ai.google.dev/gemini-api/docs/models and set "
+                            f"GEMINI_MODEL to a current model."
+                        )
+
+                    if resp.status_code != 200:
+                        last_error = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                        continue
+
+                    data = resp.json()
+                    candidates = data.get("candidates", [])
+                    if not candidates:
+                        last_error = f"No candidates in response: {data}"
+                        continue
+
+                    text = candidates[0]["content"]["parts"][0]["text"]
+                    return json.loads(text)
+
+                except json.JSONDecodeError as e:
+                    last_error = f"JSON parse error: {e}"
                     continue
-
-                if resp.status_code == 404:
-                    raise RuntimeError(
-                        f"Gemini model '{self.model}' returned 404 — it may "
-                        f"have been deprecated. Check "
-                        f"ai.google.dev/gemini-api/docs/models and set "
-                        f"GEMINI_MODEL to a current model."
-                    )
-
-                if resp.status_code != 200:
-                    last_error = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                except RuntimeError:
+                    raise
+                except Exception as e:
+                    last_error = f"API error: {e}"
                     continue
-
-                data = resp.json()
-                candidates = data.get("candidates", [])
-                if not candidates:
-                    last_error = f"No candidates in response: {data}"
-                    continue
-
-                text = candidates[0]["content"]["parts"][0]["text"]
-                return json.loads(text)
-
-            except json.JSONDecodeError as e:
-                last_error = f"JSON parse error: {e}"
-                continue
-            except RuntimeError:
-                raise
-            except Exception as e:
-                last_error = str(e)
-                continue
 
         print(f"[GeminiClient] analyze() failed after {max_retries + 1} attempts: {last_error}")
         return None
