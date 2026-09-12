@@ -42,7 +42,7 @@ class GeminiClient:
         last_error = None
         for attempt in range(max_retries + 1):
             try:
-                async with httpx.AsyncClient(timeout=15) as client:
+                async with httpx.AsyncClient(timeout=30) as client:
                     resp = await client.post(url, json=payload)
 
                 if resp.status_code == 429:
