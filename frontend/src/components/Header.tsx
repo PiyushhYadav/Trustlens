@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 export interface HeaderProps {}
@@ -19,6 +19,29 @@ export const Header: React.FC<HeaderProps> = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate("/score/" + encodeURIComponent(searchQuery.trim()));
+      setSearchQuery('');
+      searchInputRef.current?.blur();
+    }
+  };
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -107,39 +130,59 @@ export const Header: React.FC<HeaderProps> = () => {
             <Link className={`${isMethodology ? 'text-primary font-bold border-b-2 border-primary' : 'text-zinc-600 font-medium hover:text-zinc-900'} transition-colors pb-1`} to="/methodology">Methodology</Link>
           </div>
         </div>
+        
+        {location.pathname !== '/' && (
+          <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
+            <form onSubmit={handleSearch} className="w-full relative group">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
+                <span className="material-symbols-outlined text-xl">search</span>
+              </div>
+              <input 
+                ref={searchInputRef}
+                type="text" 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search any company, app or website..." 
+                className="w-full pl-10 pr-16 py-2.5 bg-stone-50/80 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium placeholder:text-stone-400 text-stone-700"
+              />
+              <div className="absolute inset-y-0 right-3 flex items-center gap-1 pointer-events-none">
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-bold text-stone-500 font-sans shadow-sm">Ctrl</kbd>
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-bold text-stone-500 font-sans shadow-sm">K</kbd>
+              </div>
+            </form>
+          </div>
+        )}
+
         <div className="flex items-center gap-3 md:gap-4">
-          {user ? (
-            <button 
-              onClick={() => {
-                const match = location.pathname.match(/^\/score\/(.+)$/);
-                const match2 = location.pathname.match(/^\/compare$/);
-                const platform = match ? match[1] : null;
-                if (platform) {
-                  const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
-                  window.open(`${apiBase}/report/${platform}`, '_blank');
-                } else if(match2) {
-                  window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
-                } else {
-                  alert("Please search for an app or open the Comparison page to generate a downloadable report.");
-                }
-              }}
-              className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
-              </svg>
-              Download Report
-            </button>
-          ) : (
-            <button 
-              onClick={() => login()}
-              className="hidden md:flex items-center gap-2 bg-white text-primary border-2 border-primary/20 px-5 py-2.5 rounded-xl font-bold hover:bg-stone-50 hover:border-primary/40 transition-all active:scale-95 shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Sign in to Download
-            </button>
+          {location.pathname.startsWith('/score/') && (
+            user ? (
+              <button 
+                onClick={() => {
+                  const match = location.pathname.match(/^\/score\/(.+)$/);
+                  const platform = match ? match[1] : null;
+                  if (platform) {
+                    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+                    window.open(apiBase + '/report/' + platform, '_blank');
+                  }
+                }}
+                className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
+                </svg>
+                Download Report
+              </button>
+            ) : (
+              <button 
+                onClick={() => login()}
+                className="hidden md:flex items-center gap-2 bg-white text-primary border-2 border-primary/20 px-5 py-2.5 rounded-xl font-bold hover:bg-stone-50 hover:border-primary/40 transition-all active:scale-95 shadow-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Sign in to Download
+              </button>
+            )
           )}
           {extensionInstalled ? (
             <div className="hidden md:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-2.5 rounded-xl font-medium border border-emerald-200 cursor-default">
@@ -294,3 +337,5 @@ export const Header: React.FC<HeaderProps> = () => {
     </header>
   );
 };
+
+
