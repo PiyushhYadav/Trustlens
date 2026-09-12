@@ -16,12 +16,18 @@ export const Header: React.FC<HeaderProps> = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [extensionInstalled, setExtensionInstalled] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setProfileOpen(false);
+      }
+      if (shareRef.current && !shareRef.current.contains(event.target as Node)) {
+        setShareOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -80,7 +86,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const isMethodology = location.pathname.startsWith('/methodology');
   const isIntelligence = location.pathname === '/' || location.pathname.startsWith('/score');
 
-  const [reportReady, setReportReady] = useState(false);
+  const [reportReady, setReportReady] = useState<any>(false);
 
   React.useEffect(() => {
     const handleReportReady = (e: any) => {
@@ -105,6 +111,50 @@ export const Header: React.FC<HeaderProps> = () => {
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4">
+          {reportReady && (
+            <div className="relative hidden md:block" ref={shareRef}>
+              <button 
+                onClick={() => setShareOpen(!shareOpen)}
+                className="flex items-center gap-2 bg-white text-stone-700 px-4 py-2.5 rounded-xl font-bold hover:bg-stone-50 transition-all active:scale-95 shadow-sm border border-stone-200"
+              >
+                <span className="material-symbols-outlined text-[18px]">share</span>
+                Share
+              </button>
+              {shareOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-stone-100 rounded-xl shadow-xl py-2 flex flex-col font-body z-50">
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">{copied ? 'check' : 'link'}</span>
+                    {copied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                  {(() => {
+                    const match = location.pathname.match(/^\/score\/(.+)$/);
+                    const platform = match ? match[1] : '';
+                    if (!platform) return null;
+                    const scoreStr = reportReady?.score ? ` They scored a ${reportReady.grade} (${reportReady.score}/100) on privacy and security.` : '';
+                    const text = `I just audited ${platform} using @TrustLens.${scoreStr} Check out their privacy score here: ${window.location.href}`;
+                    return (
+                      <a 
+                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`}
+                        target="_blank" rel="noreferrer"
+                        onClick={() => setShareOpen(false)}
+                        className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
+                      >
+                        <svg className="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        Share on X
+                      </a>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          )}
           {reportReady && (
             user ? (
               <button 
