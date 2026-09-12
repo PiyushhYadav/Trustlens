@@ -15,7 +15,6 @@ export const Header: React.FC<HeaderProps> = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [extensionInstalled, setExtensionInstalled] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -25,7 +24,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
@@ -52,26 +51,9 @@ export const Header: React.FC<HeaderProps> = () => {
     };
     document.addEventListener('mousedown', handleClickOutside);
 
-    // Extension detection
-    if (document.getElementById('trustlens-extension-installed')) {
-      setExtensionInstalled(true);
-    }
-    
-    const handleInstalled = () => setExtensionInstalled(true);
-    window.addEventListener('trustlens-installed', handleInstalled);
-    
-    const observer = new MutationObserver(() => {
-      if (document.getElementById('trustlens-extension-installed')) {
-        setExtensionInstalled(true);
-        observer.disconnect();
-      }
-    });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-    return () => {
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('trustlens-installed', handleInstalled);
-      observer.disconnect();
     };
   }, []);
   
@@ -133,7 +115,7 @@ export const Header: React.FC<HeaderProps> = () => {
         
         {location.pathname !== '/' && (
           <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
-            <form onSubmit={handleSearch} className="w-full relative group">
+            <form onSubmit={handleSearch} onClick={() => searchInputRef.current?.focus()} className="w-full relative group">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
                 <span className="material-symbols-outlined text-xl">search</span>
               </div>
@@ -153,7 +135,7 @@ export const Header: React.FC<HeaderProps> = () => {
           </div>
         )}
 
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-3 md:gap-4 shrink-0 whitespace-nowrap">
           {location.pathname.startsWith('/score/') && (
             user ? (
               <button 
