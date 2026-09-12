@@ -61,21 +61,44 @@ def calculate_score(
     
     if not safe_trend:
         import random
+        import hashlib
         platform_name = platform_info.get("display_name", "").lower() if platform_info else ""
         
-        if "instagram" in platform_name or "meta" in platform_name:
-            # Clear declining pattern ending exactly at the live score
-            start_score = min(100, total_score + 15)
-            step = (start_score - total_score) / 11
-            safe_trend = [int(start_score - (i * step) + random.uniform(-1.5, 1.5)) for i in range(11)]
-        elif "zomato" in platform_name or "swiggy" in platform_name:
-            # Clear rising pattern ending exactly at the live score
-            start_score = max(0, total_score - 15)
-            step = (total_score - start_score) / 11
-            safe_trend = [int(start_score + (i * step) + random.uniform(-1.5, 1.5)) for i in range(11)]
+        # Use platform name hash to deterministically pick a trend shape
+        name_hash = int(hashlib.md5(platform_name.encode()).hexdigest(), 16)
+        pattern = name_hash % 5
+        
+        if pattern == 0:
+            # V-shaped recovery: drops then climbs back
+            mid = max(10, total_score - 25)
+            half = 5
+            safe_trend = [int(total_score - (i * (total_score - mid) / half) + random.uniform(-3, 3)) for i in range(half + 1)]
+            safe_trend += [int(mid + ((i + 1) * (total_score - mid) / (10 - half)) + random.uniform(-3, 3)) for i in range(10 - half)]
+        elif pattern == 1:
+            # Gradual climb from much lower
+            start_score = max(5, total_score - 30)
+            safe_trend = [int(start_score + (i * (total_score - start_score) / 10) + random.uniform(-4, 4)) for i in range(11)]
+        elif pattern == 2:
+            # Dip and bounce: starts ok, dips mid, recovers
+            safe_trend = []
+            for i in range(11):
+                if i < 4:
+                    val = total_score + 5 - i * 4
+                elif i < 7:
+                    val = total_score - 15 + (i - 4) * 3
+                else:
+                    val = total_score - 6 + (i - 7) * 3
+                safe_trend.append(int(max(0, min(100, val + random.uniform(-3, 3)))))
+        elif pattern == 3:
+            # Plateau then surge: flat at lower score, then jumps up
+            plateau = max(10, total_score - 20)
+            safe_trend = [int(plateau + random.uniform(-2, 2)) for _ in range(7)]
+            for i in range(4):
+                safe_trend.append(int(plateau + (i + 1) * (total_score - plateau) / 4 + random.uniform(-3, 3)))
         else:
-            # Stable pattern with mild jitter
-            safe_trend = [int(max(0, min(100, total_score + random.uniform(-2, 2)))) for i in range(11)]
+            # Steady decline from higher
+            start_score = min(100, total_score + 25)
+            safe_trend = [int(start_score - (i * (start_score - total_score) / 10) + random.uniform(-4, 4)) for i in range(11)]
             
     if safe_trend:
         # Guarantee 12-month array length and cap the end at the exact current score
