@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = () => {
           </div>
         </div>
         
-        {(isCompare || isMethodology) && (
+        {location.pathname.startsWith('/score/') && (
           <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
             <form onSubmit={handleSearch} onClick={() => searchInputRef.current?.focus()} className="w-full relative group">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
