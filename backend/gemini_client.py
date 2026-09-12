@@ -23,7 +23,8 @@ class GeminiClient:
 
     def __init__(self, model: str | None = None):
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.model = model or os.getenv("GEMINI_MODEL", DEFAULT_MODEL)
+        # Hardcode to gemini-3.6-flash because the old model's free-tier daily quota is fully exhausted
+        self.model = "gemini-3.6-flash"
         self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
 
     async def analyze(self, prompt: str, max_retries: int = 2) -> dict | None:
