@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
         
         {location.pathname.startsWith('/score/') && (
-          <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
+            <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
             <form onSubmit={handleSearch} onClick={() => searchInputRef.current?.focus()} className="w-full relative group">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
                 <span className="material-symbols-outlined text-xl">search</span>
@@ -132,17 +132,21 @@ export const Header: React.FC<HeaderProps> = () => {
         )}
 
         <div className="flex items-center gap-3 md:gap-4 shrink-0 whitespace-nowrap">
-          {location.pathname.startsWith('/score/') && (
+          {(location.pathname.startsWith('/score/') || (location.pathname === '/compare' && reportReady)) && (
             user ? (
               <button 
                 onClick={() => {
-                  const match = location.pathname.match(/^\/score\/(.+)$/);
-                  const platform = match ? match[1] : null;
-                  if (platform) {
-                    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
-                    window.open(apiBase + '/report/' + platform, '_blank');
-                  }
-                }}
+                    if (location.pathname === '/compare') {
+                      window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
+                    } else {
+                      const match = location.pathname.match(/^\/score\/(.+)$/);
+                      const platform = match ? match[1] : null;
+                      if (platform) {
+                        const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+                        window.open(apiBase + '/report/' + platform, '_blank');
+                      }
+                    }
+                  }}
                 className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
