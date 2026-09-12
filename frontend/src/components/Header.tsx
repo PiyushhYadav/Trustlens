@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = () => {
                 } else if(match2) {
                   window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
                 } else {
-                  window.print();
+                  alert("Please search for an app or open the Comparison page to generate a downloadable report.");
                 }
               }}
               className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
