@@ -2,13 +2,13 @@ import React from 'react';
 
 export const InstallExtensionView: React.FC = () => {
   return (
-    <div className="flex flex-col items-center min-h-screen bg-zinc-900 font-body py-24 px-4 sm:px-8">
+    <div className="flex flex-col items-center min-h-screen bg-surface font-body py-32 px-4 sm:px-8">
       <div className="max-w-3xl w-full space-y-12">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold text-white tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-headline font-bold text-zinc-900 tracking-tight">
             Install TrustLens Extension
           </h1>
-          <p className="text-lg text-zinc-400 max-w-xl mx-auto">
+          <p className="text-lg text-zinc-600 max-w-xl mx-auto">
             Get the TrustLens extension for your browser and start seeing privacy scores as you browse.
           </p>
         </div>
