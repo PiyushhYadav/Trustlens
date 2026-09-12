@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 export interface SignalData {
   score: number;
@@ -99,6 +99,34 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
     monthLabels.unshift(monthsArr[mIdx]);
     mIdx = (mIdx - 1 + 12) % 12;
   }
+
+  // --- Interactive trend chart state ---
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(11);
+
+  // Close modal on Escape
+  useEffect(() => {
+    if (!showModal) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowModal(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showModal]);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showModal) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal]);
+
+  // Find nearest data point to cursor X position
+  const handleChartMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width;
+    const idx = Math.round(relX * 11);
+    setHoveredIndex(Math.max(0, Math.min(11, idx)));
+  }, []);
 
   return (
     <main className="pt-32 pb-32 max-w-screen-2xl mx-auto px-8">
@@ -234,7 +262,12 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
             </div>
             
             {/* Chart Area */}
-            <div className="absolute top-0 left-8 right-4 bottom-6">
+            <div 
+              className="absolute top-0 left-8 right-4 bottom-6 cursor-pointer"
+              onMouseMove={handleChartMouseMove}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => { setSelectedIndex(11); setShowModal(true); }}
+            >
               {/* Horizontal Gridlines */}
               <div className="absolute inset-0 flex flex-col justify-between py-1">
                 {[...Array(5)].map((_, i) => (
@@ -261,18 +294,54 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
                 <path d={smoothPath} fill="none" stroke="#005dac" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
               </svg>
 
-              {/* Final Data Point Dot & Badge */}
-              <div 
-                className="absolute w-3 h-3 bg-[#005dac] rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_0_4px_rgba(0,93,172,0.2)]"
-                style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
-              ></div>
-              <div 
-                className="absolute z-20 flex flex-col items-center bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-xl px-4 py-2 transform -translate-x-1/2 -translate-y-[calc(100%+12px)]"
-                style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
-              >
-                <span className="text-xl font-bold text-slate-800 leading-none">{safeTrend[11]}</span>
-                <span className="text-[10px] font-medium text-slate-400 mt-1 whitespace-nowrap">{monthLabels[11]} {new Date().getFullYear()}</span>
-              </div>
+              {/* Hover Dot + Tooltip (only visible when hovering) */}
+              {hoveredIndex !== null && (
+                <>
+                  <div 
+                    className="absolute w-3 h-3 bg-[#005dac] rounded-full transform -translate-x-1/2 -translate-y-1/2 ring-4 ring-blue-200/40 pointer-events-none z-20"
+                    style={{ left: `${pointCoords[hoveredIndex].x}%`, top: `${pointCoords[hoveredIndex].y}%` }}
+                  />
+                  <div 
+                    className={`absolute z-30 pointer-events-none flex flex-col items-center bg-slate-900 text-white shadow-lg rounded-lg px-3 py-1.5 transform -translate-x-1/2 ${
+                      pointCoords[hoveredIndex].y < 25 ? 'mt-5' : '-translate-y-[calc(100%+14px)]'
+                    }`}
+                    style={{ 
+                      left: `${Math.max(10, Math.min(90, pointCoords[hoveredIndex].x))}%`, 
+                      top: `${pointCoords[hoveredIndex].y}%` 
+                    }}
+                  >
+                    <span className="text-sm font-bold leading-none">{safeTrend[hoveredIndex]} / 100</span>
+                    <span className="text-[9px] text-slate-300 mt-0.5">{monthLabels[hoveredIndex]}</span>
+                  </div>
+                </>
+              )}
+
+              {/* Static Final Data Point Dot & Badge (hidden when hovering) */}
+              {hoveredIndex === null && (
+                <>
+                  <div 
+                    className="absolute w-3 h-3 bg-[#005dac] rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_0_4px_rgba(0,93,172,0.2)]"
+                    style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
+                  ></div>
+                  <div 
+                    className="absolute z-20 flex flex-col items-center bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-xl px-4 py-2 transform -translate-x-1/2 -translate-y-[calc(100%+12px)]"
+                    style={{ left: '100%', top: `${100 - safeTrend[11]}%` }}
+                  >
+                    <span className="text-xl font-bold text-slate-800 leading-none">{safeTrend[11]}</span>
+                    <span className="text-[10px] font-medium text-slate-400 mt-1 whitespace-nowrap">{monthLabels[11]} {new Date().getFullYear()}</span>
+                  </div>
+                </>
+              )}
+
+              {/* "Click to Zoom" Hint Overlay (hover only, invisible to touch/PDF) */}
+              {hoveredIndex !== null && (
+                <div className="absolute inset-0 flex items-end justify-center pb-1 z-10 pointer-events-none">
+                  <span className="bg-slate-900/75 text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg backdrop-blur-sm">
+                    <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>zoom_in</span>
+                    Click to Zoom & Inspect
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* X-Axis Labels */}
@@ -461,6 +530,116 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ platform, data }) => {
           </p>
         </div>
       </section>
+
+      {/* Trend Zoom Modal */}
+      {showModal && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
+        >
+          <div className="bg-white w-full max-w-4xl rounded-3xl p-8 shadow-2xl border border-stone-100 flex flex-col gap-6 relative">
+            {/* Header */}
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-2xl font-bold font-headline text-slate-900">12-Month Score Inspector</h3>
+                <p className="text-sm text-slate-500 font-body">Rolling trust score trajectory for <span className="capitalize font-medium">{platform}</span></p>
+              </div>
+              <button 
+                onClick={() => setShowModal(false)}
+                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Large Chart */}
+            <div className="relative w-full h-80 bg-slate-50/50 rounded-2xl border border-slate-100 overflow-hidden">
+              {/* Y-Axis Labels */}
+              <div className="absolute top-4 left-4 bottom-8 w-6 flex flex-col justify-between py-[2px] text-[11px] font-bold text-slate-400 z-10">
+                <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
+              </div>
+              
+              {/* Modal Chart Area */}
+              <div className="absolute top-4 left-12 right-6 bottom-8">
+                {/* Dashed Gridlines */}
+                <div className="absolute inset-0 flex flex-col justify-between py-1">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={`mh-${i}`} className="w-full border-t border-dashed border-slate-200" />
+                  ))}
+                </div>
+
+                {/* SVG (reuses same path data) */}
+                <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="trendGradientModal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#2563eb" stopOpacity="0.2" />
+                      <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  <path d={fillPath} fill="url(#trendGradientModal)" />
+                  <path d={smoothPath} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                </svg>
+
+                {/* Selected Point Marker */}
+                <div 
+                  className="absolute w-4 h-4 bg-blue-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 ring-4 ring-blue-200/50 shadow-lg pointer-events-none z-10 transition-all duration-200 ease-out"
+                  style={{ left: `${pointCoords[selectedIndex].x}%`, top: `${pointCoords[selectedIndex].y}%` }}
+                />
+                
+                {/* Selected Point Tooltip */}
+                <div 
+                  className={`absolute z-20 pointer-events-none flex flex-col items-center bg-slate-900 text-white shadow-xl rounded-xl px-4 py-2 transform -translate-x-1/2 transition-all duration-200 ease-out ${
+                    pointCoords[selectedIndex].y < 20 ? 'mt-6' : '-translate-y-[calc(100%+18px)]'
+                  }`}
+                  style={{ 
+                    left: `${Math.max(6, Math.min(94, pointCoords[selectedIndex].x))}%`, 
+                    top: `${pointCoords[selectedIndex].y}%` 
+                  }}
+                >
+                  <span className="text-lg font-bold leading-none">{safeTrend[selectedIndex]}</span>
+                  <span className="text-[10px] text-slate-300 mt-1">{monthLabels[selectedIndex]} {new Date().getFullYear()}</span>
+                </div>
+              </div>
+
+              {/* Modal X-Axis Labels */}
+              <div className="absolute bottom-1 left-12 right-6 h-5">
+                {monthLabels.map((m, i) => (
+                  <span 
+                    key={i} 
+                    className={`absolute text-[11px] font-medium transform -translate-x-1/2 whitespace-nowrap transition-colors ${
+                      i === selectedIndex ? 'text-blue-600 font-bold' : 'text-slate-400'
+                    }`}
+                    style={{ left: `${(i / 11) * 100}%` }}
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Slider Control */}
+            <div className="space-y-3 bg-blue-50/60 p-5 rounded-2xl border border-blue-100/50">
+              <div className="flex justify-between items-center text-sm font-bold text-slate-800">
+                <span>Selected: <span className="text-blue-600 font-extrabold">{monthLabels[selectedIndex]} {new Date().getFullYear()}</span></span>
+                <span>Score: <span className="text-blue-600 font-extrabold">{safeTrend[selectedIndex]} / 100</span></span>
+              </div>
+              <input 
+                type="range" 
+                min={0} 
+                max={11} 
+                value={selectedIndex} 
+                onChange={(e) => setSelectedIndex(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer h-2"
+              />
+              <div className="flex justify-between text-[10px] text-slate-400 font-medium px-0.5">
+                {monthLabels.map((m, i) => (
+                  <span key={i} className={i === selectedIndex ? 'text-blue-600 font-bold' : ''}>{m}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
