@@ -17,10 +17,8 @@ export const Header: React.FC<HeaderProps> = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [extensionInstalled, setExtensionInstalled] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const shareRef = useRef<HTMLDivElement>(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -49,9 +47,6 @@ export const Header: React.FC<HeaderProps> = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setProfileOpen(false);
-      }
-      if (shareRef.current && !shareRef.current.contains(event.target as Node)) {
-        setShareOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -120,6 +115,63 @@ export const Header: React.FC<HeaderProps> = () => {
     return () => window.removeEventListener('reportReady', handleReportReady);
   }, []);
 
+  const renderReportActions = () => {
+    if (!reportReady) return null;
+    return (
+      <div className="border-b border-stone-100 mb-1 pb-1">
+        <button 
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }}
+          className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-3 font-medium"
+        >
+          <span className="material-symbols-outlined text-[18px]">{copied ? 'check' : 'link'}</span>
+          {copied ? 'Copied!' : 'Copy Link'}
+        </button>
+        {(() => {
+          const match = location.pathname.match(/^\/score\/(.+)$/);
+          const platform = match ? match[1] : '';
+          if (!platform) return null;
+          const scoreStr = reportReady?.score ? ` They scored a ${reportReady.grade} (${reportReady.score}/100) on privacy and security.` : '';
+          const text = `I just audited ${platform} using @TrustLens.${scoreStr} Check out their privacy score here: ${window.location.href}`;
+          return (
+            <a 
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`}
+              target="_blank" rel="noreferrer"
+              onClick={() => setProfileOpen(false)}
+              className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-3 font-medium"
+            >
+              <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Share on X
+            </a>
+          );
+        })()}
+        <button 
+          onClick={() => {
+            const match = location.pathname.match(/^\/score\/(.+)$/);
+            const match2 = location.pathname.match(/^\/compare$/);
+            const platform = match ? match[1] : null;
+            if (platform) {
+              const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
+              window.open(`${apiBase}/report/${platform}`, '_blank');
+            } else if(match2) {
+              window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
+            } else {
+              window.print();
+            }
+            setProfileOpen(false);
+          }}
+          className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-3 font-medium"
+        >
+          <span className="material-symbols-outlined text-[18px]">download</span>
+          Download PDF
+        </button>
+      </div>
+    );
+  };
+
   return (
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-stone-100">
       <nav className="flex justify-between items-center w-full px-4 md:px-8 py-4 md:py-5 max-w-screen-2xl mx-auto">
@@ -136,7 +188,7 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="hidden lg:flex flex-1 max-w-lg mx-6">
+        <div className="hidden lg:flex flex-1 w-full max-w-2xl mx-8">
           <form onSubmit={handleSearch} className="w-full relative group">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary">
               <span className="material-symbols-outlined text-xl">search</span>
@@ -157,96 +209,6 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
 
         <div className="flex items-center gap-3 md:gap-4">
-          {reportReady && (
-            <div className="relative hidden md:block" ref={shareRef}>
-              <button 
-                onClick={() => setShareOpen(!shareOpen)}
-                className="flex items-center gap-2 bg-white text-stone-700 px-4 py-2.5 rounded-xl font-bold hover:bg-stone-50 transition-all active:scale-95 shadow-sm border border-stone-200"
-              >
-                <span className="material-symbols-outlined text-[18px]">share</span>
-                Share
-              </button>
-              {shareOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-stone-100 rounded-xl shadow-xl py-2 flex flex-col font-body z-50">
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
-                    className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">{copied ? 'check' : 'link'}</span>
-                    {copied ? 'Copied!' : 'Copy Link'}
-                  </button>
-                  {(() => {
-                    const match = location.pathname.match(/^\/score\/(.+)$/);
-                    const platform = match ? match[1] : '';
-                    if (!platform) return null;
-                    const scoreStr = reportReady?.score ? ` They scored a ${reportReady.grade} (${reportReady.score}/100) on privacy and security.` : '';
-                    const text = `I just audited ${platform} using @TrustLens.${scoreStr} Check out their privacy score here: ${window.location.href}`;
-                    return (
-                      <>
-                        <a 
-                          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`}
-                          target="_blank" rel="noreferrer"
-                          onClick={() => setShareOpen(false)}
-                          className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
-                        >
-                          <svg className="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                          Share on X
-                        </a>
-                        <a 
-                          href={`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`}
-                          target="_blank" rel="noreferrer"
-                          onClick={() => setShareOpen(false)}
-                          className="text-left px-4 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
-                        >
-                          <svg className="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                          Share on LinkedIn
-                        </a>
-                      </>
-                    );
-                  })()}
-                </div>
-              )}
-            </div>
-          )}
-          {reportReady && (
-            user ? (
-              <button 
-                onClick={() => {
-                  const match = location.pathname.match(/^\/score\/(.+)$/);
-                  const match2 = location.pathname.match(/^\/compare$/);
-                  const platform = match ? match[1] : null;
-                  if (platform) {
-                    const apiBase = import.meta.env.VITE_API_URL || 'https://trustlens-qtex.onrender.com';
-                    window.open(`${apiBase}/report/${platform}`, '_blank');
-                  } else if(match2) {
-                    window.dispatchEvent(new CustomEvent('triggerCompareDownload'));
-                  } else {
-                    window.print();
-                  }
-                }}
-                className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-medium hover:bg-primary-container transition-all active:scale-95 shadow-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" } />
-                </svg>
-                Download Report
-              </button>
-            ) : (
-              <button 
-                onClick={() => login()}
-                className="hidden md:flex items-center gap-2 bg-white text-primary border-2 border-primary/20 px-5 py-2.5 rounded-xl font-bold hover:bg-stone-50 hover:border-primary/40 transition-all active:scale-95 shadow-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                Sign in to Download
-              </button>
-            )
-          )}
           {extensionInstalled ? (
             <div className="hidden md:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-2.5 rounded-xl font-medium border border-emerald-200 cursor-default">
               <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -269,6 +231,7 @@ export const Header: React.FC<HeaderProps> = () => {
             
             {profileOpen && (
               <div className="absolute top-full right-0 mt-3 w-56 bg-white border border-stone-100 rounded-xl shadow-xl py-2 flex flex-col font-body z-50">
+                {renderReportActions()}
                 {user ? (
                   <>
                     <div className="px-4 py-2 border-b border-stone-100 mb-1">
