@@ -63,6 +63,14 @@ export const ScoreCardView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
+  const [animationDone, setAnimationDone] = useState(false);
+
+  // Minimum animation duration: 5 steps × 1.5s = 7.5s, round to 8s
+  useEffect(() => {
+    setAnimationDone(false);
+    const timer = setTimeout(() => setAnimationDone(true), 8000);
+    return () => clearTimeout(timer);
+  }, [platform]);
 
   useEffect(() => {
     if (!platform) return;
@@ -105,11 +113,12 @@ export const ScoreCardView: React.FC = () => {
 
   useEffect(() => {
     // Notify header when report is ready for download
-    window.dispatchEvent(new CustomEvent('reportReady', { detail: !loading && !error && data }));
+    window.dispatchEvent(new CustomEvent('reportReady', { detail: !loading && !error && data && animationDone }));
     return () => { window.dispatchEvent(new CustomEvent('reportReady', { detail: false })); };
-  }, [loading, error, data]);
+  }, [loading, error, data, animationDone]);
 
-  if (loading) {
+  // Show animation if EITHER data hasn't arrived OR animation hasn't completed
+  if (loading || !animationDone) {
     return <LoadingAnimation platform={platform || 'app'} />;
   }
 
