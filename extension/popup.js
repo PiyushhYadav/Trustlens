@@ -1,5 +1,5 @@
 const API_BASE = "https://trustlens-qtex.onrender.com";
-const WEBSITE_BASE = "https://trusttlens.netlify.app";
+const WEBSITE_BASE = "https://trustlens-app.onrender.com";
 
 const loadingState = document.getElementById("loadingState");
 const unsupportedState = document.getElementById("unsupportedState");

@@ -28,7 +28,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://trusttlens.netlify.app/*",
+        "https://trustlens-app.onrender.com/*",
         "http://localhost:*/*",
         "http://127.0.0.1:*/*"
       ],
